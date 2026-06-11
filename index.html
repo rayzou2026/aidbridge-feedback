@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AidBridge · Inspection Feedback 检查反馈</title>
+  <style>
+    :root {
+      --brand: #2563eb; --brand-dark: #1d4ed8; --bg: #f1f5f9; --card: #fff;
+      --text: #1e293b; --muted: #64748b; --border: #d8dee9; --danger: #dc2626; --ok: #16a34a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+    .wrap { max-width: 680px; margin: 0 auto; padding: 24px 16px 64px; }
+    header { text-align: center; margin-bottom: 20px; }
+    header h1 { font-size: 22px; margin: 0 0 4px; }
+    header p { color: var(--muted); margin: 0; font-size: 14px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    label { display: block; font-weight: 600; font-size: 14px; margin: 16px 0 6px; }
+    label .sub { font-weight: 400; color: var(--muted); }
+    .req { color: var(--danger); }
+    input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 15px; font-family: inherit; background: #fff; color: var(--text); }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    textarea { min-height: 130px; resize: vertical; }
+    .drop { border: 2px dashed var(--border); border-radius: 11px; padding: 22px; text-align: center; color: var(--muted); cursor: pointer; transition: .15s; font-size: 14px; }
+    .drop:hover, .drop.over { border-color: var(--brand); background: #eff4ff; color: var(--brand-dark); }
+    .previews { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .thumb { position: relative; width: 92px; height: 92px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb button { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,.6); color: #fff; cursor: pointer; font-size: 14px; line-height: 1; }
+    .btn { width: 100%; margin-top: 24px; padding: 14px; background: var(--brand); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    .btn:hover { background: var(--brand-dark); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .msg { margin-top: 16px; padding: 12px 14px; border-radius: 9px; font-size: 14px; display: none; }
+    .msg.err { display: block; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    .done { text-align: center; padding: 28px 10px; }
+    .done .check { width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 36px; line-height: 64px; margin: 0 auto 14px; }
+    .done h2 { margin: 0 0 6px; }
+    .done p { color: var(--muted); margin: 0 0 20px; }
+    .linkbtn { background: none; border: none; color: var(--brand); font-size: 15px; cursor: pointer; text-decoration: underline; }
+    .twolang { font-size: 13px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>AidBridge · 检查反馈 / Inspection Feedback</h1>
+      <p>发现问题？写下原因并上传截图 · Spotted an issue? Describe it and attach a screenshot.</p>
+    </header>
+
+    <div class="card" id="formCard">
+      <form id="feedbackForm">
+        <label>访问码 <span class="sub">Access code</span> <span class="req">*</span></label>
+        <input type="text" id="accessCode" autocomplete="off" placeholder="请输入团队访问码 / team access code" />
+
+        <label>姓名 <span class="sub">Name</span> <span class="req">*</span></label>
+        <input type="text" id="name" placeholder="您的姓名 / your name" />
+
+        <label>日期 <span class="sub">Date</span></label>
+        <input type="date" id="date" />
+
+        <label>问题页面 / 位置 <span class="sub">Page or area</span></label>
+        <input type="text" id="page" placeholder="例如 首页 / /needs / 某个按钮 · e.g. Home, /needs, a button" />
+
+        <label>严重程度 <span class="sub">Severity</span></label>
+        <select id="severity">
+          <option value="">— 选填 / optional —</option>
+          <option value="High 高">High 高</option>
+          <option value="Medium 中">Medium 中</option>
+          <option value="Low 低">Low 低</option>
+        </select>
+
+        <label>问题描述 <span class="sub">Description</span> <span class="req">*</span></label>
+        <textarea id="description" placeholder="请说明发现了什么问题、在哪里、怎么复现 · What's wrong, where, how to reproduce"></textarea>
+
+        <label>截图 <span class="sub">Screenshots</span></label>
+        <div class="drop" id="drop">
+          点击选择，或把图片拖到这里<br />
+          <span class="twolang">Click to choose, or drag images here · 最多 15 张 / up to 15</span>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" multiple style="display:none" />
+        <div class="previews" id="previews"></div>
+
+        <div class="msg err" id="errBox"></div>
+        <button type="submit" class="btn" id="submitBtn">提交反馈 / Submit</button>
+      </form>
+    </div>
+
+    <div class="card" id="doneCard" style="display:none">
+      <div class="done">
+        <div class="check">✓</div>
+        <h2>已收到，谢谢！/ Received, thank you!</h2>
+        <p>您的反馈已记录，我们会查看并修复。<br />Your feedback has been recorded.</p>
+        <button class="linkbtn" id="againBtn">再提交一条 / Submit another</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase 客户端 / client (UMD build exposes window.supabase) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ---- 配置 / config（publishable key 是公开安全的）----
+    const SUPABASE_URL = 'https://setbceatrzvznttmleii.supabase.co'
+    const SUPABASE_KEY = 'sb_publishable_5RrkzfW_tUjAItrIjBVFCQ_ksZ6jkpc'
+    const BUCKET = 'feedback-shots'
+    const ACCESS_CODE = 'aidbridge-inspect' // 轻量门禁 / light gate
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    const form = document.getElementById('feedbackForm')
+    const fileInput = document.getElementById('fileInput')
+    const drop = document.getElementById('drop')
+    const previews = document.getElementById('previews')
+    const errBox = document.getElementById('errBox')
+    const submitBtn = document.getElementById('submitBtn')
+    const formCard = document.getElementById('formCard')
+    const doneCard = document.getElementById('doneCard')
+
+    document.getElementById('date').valueAsDate = new Date()
+    const savedCode = localStorage.getItem('feedback_access_code')
+    if (savedCode) document.getElementById('accessCode').value = savedCode
+
+    let chosen = []
+
+    function renderPreviews() {
+      previews.innerHTML = ''
+      chosen.forEach((file, idx) => {
+        const div = document.createElement('div')
+        div.className = 'thumb'
+        const img = document.createElement('img')
+        img.src = URL.createObjectURL(file)
+        const rm = document.createElement('button')
+        rm.type = 'button'; rm.textContent = '×'
+        rm.onclick = () => { chosen.splice(idx, 1); renderPreviews() }
+        div.appendChild(img); div.appendChild(rm); previews.appendChild(div)
+      })
+    }
+    function addFiles(list) {
+      for (const f of list) { if (f.type.startsWith('image/')) chosen.push(f) }
+      if (chosen.length > 15) chosen = chosen.slice(0, 15)
+      renderPreviews()
+    }
+    drop.onclick = () => fileInput.click()
+    fileInput.onchange = () => { addFiles(fileInput.files); fileInput.value = '' }
+    drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over') }
+    drop.ondragleave = () => drop.classList.remove('over')
+    drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); addFiles(e.dataTransfer.files) }
+
+    function showErr(msg) { errBox.textContent = msg; errBox.style.display = 'block' }
+
+    function extOf(file) {
+      const fromName = (file.name && file.name.includes('.')) ? file.name.split('.').pop().toLowerCase() : ''
+      if (fromName) return fromName
+      const m = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'image/heic': 'heic', 'image/bmp': 'bmp' }
+      return m[file.type] || 'png'
+    }
+
+    form.onsubmit = async (e) => {
+      e.preventDefault()
+      errBox.style.display = 'none'
+      const name = document.getElementById('name').value.trim()
+      const desc = document.getElementById('description').value.trim()
+      const code = document.getElementById('accessCode').value.trim()
+      if (code !== ACCESS_CODE) return showErr('访问码错误 / Wrong access code')
+      if (!name) return showErr('请填写姓名 / Please enter your name')
+      if (!desc) return showErr('请填写问题描述 / Please enter a description')
+
+      submitBtn.disabled = true
+      submitBtn.textContent = '提交中… / Submitting…'
+      try {
+        const subId = crypto.randomUUID()
+        const imagePaths = []
+        for (let i = 0; i < chosen.length; i++) {
+          const file = chosen[i]
+          const path = `${subId}/screenshot-${i + 1}.${extOf(file)}`
+          const { error } = await sb.storage.from(BUCKET).upload(path, file, {
+            contentType: file.type || 'image/png', upsert: false
+          })
+          if (error) throw new Error('图片上传失败 / image upload failed: ' + error.message)
+          imagePaths.push(path)
+        }
+        const { error: insErr } = await sb.from('feedback').insert({
+          id: subId,
+          name,
+          date: document.getElementById('date').value || null,
+          page: document.getElementById('page').value.trim() || null,
+          severity: document.getElementById('severity').value || null,
+          description: desc,
+          images: imagePaths
+        })
+        if (insErr) throw new Error(insErr.message)
+
+        localStorage.setItem('feedback_access_code', code)
+        formCard.style.display = 'none'
+        doneCard.style.display = 'block'
+      } catch (err) {
+        showErr(err.message || '提交失败 / Submit failed')
+      } finally {
+        submitBtn.disabled = false
+        submitBtn.textContent = '提交反馈 / Submit'
+      }
+    }
+
+    document.getElementById('againBtn').onclick = () => {
+      document.getElementById('page').value = ''
+      document.getElementById('severity').value = ''
+      document.getElementById('description').value = ''
+      chosen = []; renderPreviews()
+      doneCard.style.display = 'none'; formCard.style.display = 'block'
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  </script>
+</body>
+</html>
