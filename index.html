@@ -56,8 +56,8 @@
         <label>姓名 <span class="sub">Name</span> <span class="req">*</span></label>
         <input type="text" id="name" placeholder="您的姓名 / your name" />
 
-        <label>日期 <span class="sub">Date</span></label>
-        <input type="date" id="date" />
+        <label>日期 <span class="sub">Date · 自动今天 / auto: today</span></label>
+        <input type="text" id="date" readonly />
 
         <label>问题页面 / 位置 <span class="sub">Page or area</span></label>
         <input type="text" id="page" placeholder="例如 首页 / /needs / 某个按钮 · e.g. Home, /needs, a button" />
@@ -116,7 +116,13 @@
     const formCard = document.getElementById('formCard')
     const doneCard = document.getElementById('doneCard')
 
-    document.getElementById('date').valueAsDate = new Date()
+    // 日期自动设为今天，只读、无日历（避免误选过去/未来日期）
+    // date auto-set to today, read-only, no calendar (prevents picking past/future dates)
+    {
+      const d = new Date()
+      document.getElementById('date').value =
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    }
     const savedCode = localStorage.getItem('feedback_access_code')
     if (savedCode) document.getElementById('accessCode').value = savedCode
 
