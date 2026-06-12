@@ -39,6 +39,9 @@
     .done p { color: var(--muted); margin: 0 0 20px; }
     .linkbtn { background: none; border: none; color: var(--brand); font-size: 15px; cursor: pointer; text-decoration: underline; }
     .twolang { font-size: 13px; color: var(--muted); }
+    .shotbtns { display: flex; gap: 8px; margin-top: 10px; }
+    .minibtn { flex: 1; padding: 10px; border: 1px solid var(--border); background: #f8fafc; border-radius: 9px; font-size: 14px; cursor: pointer; color: var(--text); }
+    .minibtn:hover { background: #eff4ff; border-color: var(--brand); color: var(--brand-dark); }
   </style>
 </head>
 <body>
@@ -56,8 +59,8 @@
         <label>姓名 <span class="sub">Name</span> <span class="req">*</span></label>
         <input type="text" id="name" placeholder="您的姓名 / your name" />
 
-        <label>日期 <span class="sub">Date · 自动今天 / auto: today</span></label>
-        <input type="text" id="date" readonly />
+        <label>日期 <span class="sub">Date · 点击选择，仅限今天及以后 / tap to pick, today onward</span></label>
+        <input type="date" id="date" />
 
         <label>问题页面 / 位置 <span class="sub">Page or area</span></label>
         <input type="text" id="page" placeholder="例如 首页 / /needs / 某个按钮 · e.g. Home, /needs, a button" />
@@ -75,10 +78,15 @@
 
         <label>截图 <span class="sub">Screenshots</span></label>
         <div class="drop" id="drop">
-          点击选择，或把图片拖到这里<br />
-          <span class="twolang">Click to choose, or drag images here · 最多 15 张 / up to 15</span>
+          点击选择 · 拖拽 · 粘贴(Ctrl/Cmd+V)<br />
+          <span class="twolang">Click · drag · paste · 手机可拍照或从相册选 / on phone: take a photo or pick from album · 最多 15 / up to 15</span>
+        </div>
+        <div class="shotbtns">
+          <button type="button" class="minibtn" id="chooseBtn">📁 选择图片 / Choose</button>
+          <button type="button" class="minibtn" id="cameraBtn">📷 拍照 / Take photo</button>
         </div>
         <input type="file" id="fileInput" accept="image/*" multiple style="display:none" />
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" />
         <div class="previews" id="previews"></div>
 
         <div class="msg err" id="errBox"></div>
@@ -116,12 +124,14 @@
     const formCard = document.getElementById('formCard')
     const doneCard = document.getElementById('doneCard')
 
-    // 日期自动设为今天，只读、无日历（避免误选过去/未来日期）
-    // date auto-set to today, read-only, no calendar (prevents picking past/future dates)
+    // 日期：可点选日历，但禁用过去日期（只能选今天及以后）
+    // date: pickable calendar, but past dates disabled (only today or later)
     {
       const d = new Date()
-      document.getElementById('date').value =
-        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      const dateEl = document.getElementById('date')
+      dateEl.min = today
+      dateEl.value = today
     }
     const savedCode = localStorage.getItem('feedback_access_code')
     if (savedCode) document.getElementById('accessCode').value = savedCode
@@ -146,11 +156,24 @@
       if (chosen.length > 15) chosen = chosen.slice(0, 15)
       renderPreviews()
     }
+    const cameraInput = document.getElementById('cameraInput')
     drop.onclick = () => fileInput.click()
+    document.getElementById('chooseBtn').onclick = () => fileInput.click()
+    document.getElementById('cameraBtn').onclick = () => cameraInput.click()
     fileInput.onchange = () => { addFiles(fileInput.files); fileInput.value = '' }
+    cameraInput.onchange = () => { addFiles(cameraInput.files); cameraInput.value = '' }
     drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over') }
     drop.ondragleave = () => drop.classList.remove('over')
     drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); addFiles(e.dataTransfer.files) }
+    // 粘贴图片：截图后在页面任意处按 Ctrl/Cmd+V 直接贴入 / paste an image anywhere on the page
+    document.addEventListener('paste', (e) => {
+      const items = (e.clipboardData && e.clipboardData.items) || []
+      const imgs = []
+      for (const it of items) {
+        if (it.type && it.type.startsWith('image/')) { const f = it.getAsFile(); if (f) imgs.push(f) }
+      }
+      if (imgs.length) addFiles(imgs)
+    })
 
     function showErr(msg) { errBox.textContent = msg; errBox.style.display = 'block' }
 
