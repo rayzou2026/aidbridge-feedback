@@ -38,6 +38,8 @@
     .done h2 { margin: 0 0 6px; }
     .done p { color: var(--muted); margin: 0 0 20px; }
     .linkbtn { background: none; border: none; color: var(--brand); font-size: 15px; cursor: pointer; text-decoration: underline; }
+    .statusbox { background: #f8fafc; border: 1px solid var(--border); border-radius: 9px; padding: 12px; margin: 6px 0 16px; }
+    .statusbox a { display: block; word-break: break-all; color: var(--brand); font-size: 13px; margin-bottom: 8px; }
     .twolang { font-size: 13px; color: var(--muted); }
     .shotbtns { display: flex; gap: 8px; margin-top: 10px; }
     .minibtn { flex: 1; padding: 10px; border: 1px solid var(--border); background: #f8fafc; border-radius: 9px; font-size: 14px; cursor: pointer; color: var(--text); }
@@ -115,7 +117,11 @@
       <div class="done">
         <div class="check">✓</div>
         <h2>已收到，谢谢！/ Received, thank you!</h2>
-        <p>您的反馈已记录，我们会查看并修复。<br />Your feedback has been recorded.</p>
+        <p>保存下面的链接，可随时回来查看我们的回复、继续补充。<br />Save the link below to come back, read our reply, and add more.</p>
+        <div class="statusbox">
+          <a id="statusLink" href="#" target="_blank" rel="noopener"></a>
+          <button type="button" class="minibtn" id="copyStatusBtn">📋 复制链接 / Copy link</button>
+        </div>
         <button class="linkbtn" id="againBtn">再提交一条 / Submit another</button>
       </div>
     </div>
@@ -245,6 +251,8 @@
         })
         if (insErr) throw new Error(insErr.message)
 
+        const statusUrl = new URL('status.html?id=' + subId, location.href).href
+        const sl = document.getElementById('statusLink'); sl.href = statusUrl; sl.textContent = statusUrl
         formCard.style.display = 'none'
         doneCard.style.display = 'block'
       } catch (err) {
@@ -253,6 +261,17 @@
         submitBtn.disabled = false
         submitBtn.textContent = '提交反馈 / Submit'
       }
+    }
+
+    document.getElementById('copyStatusBtn').onclick = async () => {
+      const url = document.getElementById('statusLink').href
+      const btn = document.getElementById('copyStatusBtn')
+      try {
+        await navigator.clipboard.writeText(url)
+      } catch (e) {
+        const t = document.createElement('textarea'); t.value = url; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove()
+      }
+      btn.textContent = '已复制 / Copied ✓'
     }
 
     document.getElementById('againBtn').onclick = () => {
