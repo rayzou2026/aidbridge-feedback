@@ -40,6 +40,9 @@
     .shots a { display: block; }
     .shots img { width: 130px; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
     .empty { text-align: center; color: var(--muted); padding: 30px; }
+    .reply { margin-top: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9px; padding: 10px 12px; font-size: 14px; color: #1e3a8a; white-space: pre-wrap; line-height: 1.6; }
+    .reply-label { font-weight: 700; margin-bottom: 4px; }
+    .reply.none { background: #f8fafc; border-color: var(--border); color: var(--muted); font-style: italic; }
   </style>
 </head>
 <body>
@@ -127,7 +130,10 @@
           `<span class="badge ${sevClass(r.severity)}">${esc(r.severity || '—')}</span></div>` +
           `<div class="meta">${esc(fmtTime(r.created_at))} · 页面/Page: ${esc(r.page || '—')} · 日期/Date: ${esc(r.date || '—')}</div>` +
           `<p class="desc">${esc(r.description)}</p>` +
-          `<div class="shots"></div>`
+          `<div class="shots"></div>` +
+          (r.reply
+            ? `<div class="reply"><div class="reply-label">💬 回复 / Reply${r.reply_at ? ' · ' + esc(fmtTime(r.reply_at)) : ''}</div>${esc(r.reply)}</div>`
+            : `<div class="reply none">（暂未回复 / no reply yet）</div>`)
         card.appendChild(sub)
 
         const shots = sub.querySelector('.shots')
