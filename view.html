@@ -12,21 +12,23 @@
     * { box-sizing: border-box; }
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
     .wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
-    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
     header h1 { font-size: 20px; margin: 0; }
     .muted { color: var(--muted); font-size: 14px; }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 16px; }
     label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
-    input[type="text"], input[type="password"], input[type="email"] { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 15px; }
-    input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
-    .btn { padding: 11px 16px; background: var(--brand); color: #fff; border: none; border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    input[type="text"], input[type="password"], input[type="email"], textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 9px; font-size: 15px; font-family: inherit; }
+    input:focus, textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    textarea { min-height: 70px; resize: vertical; }
+    .btn { padding: 10px 16px; background: var(--brand); color: #fff; border: none; border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer; }
     .btn:hover { background: var(--brand-dark); }
     .btn.secondary { background: #e2e8f0; color: var(--text); }
+    .btn.small { padding: 8px 14px; font-size: 14px; }
     .btn:disabled { opacity: .6; cursor: not-allowed; }
     .err { margin-top: 12px; padding: 11px 13px; border-radius: 9px; font-size: 14px; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; display: none; }
     .err.show { display: block; }
-    .sub { border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 12px; }
-    .sub:last-child { border-bottom: none; }
+    .sub { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; }
+    .sub:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
     .row1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .name { font-weight: 700; font-size: 16px; }
     .badge { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
@@ -36,13 +38,20 @@
     .badge.none { background: #f1f5f9; color: var(--muted); }
     .meta { color: var(--muted); font-size: 13px; margin: 4px 0 10px; }
     .desc { white-space: pre-wrap; margin: 0 0 12px; }
-    .shots { display: flex; flex-wrap: wrap; gap: 10px; }
-    .shots a { display: block; }
+    .shots { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
     .shots img { width: 130px; height: 130px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+    .thread { border-left: 3px solid #e2e8f0; padding-left: 12px; margin: 8px 0; display: flex; flex-direction: column; gap: 8px; }
+    .rep { border-radius: 9px; padding: 9px 12px; font-size: 14px; white-space: pre-wrap; line-height: 1.55; }
+    .rep.ai { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; }
+    .rep.team { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+    .rep.tester { background: #f8fafc; border: 1px solid var(--border); color: #334155; }
+    .rep .who { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+    .replybox { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .replybox .rowflex { display: flex; gap: 8px; align-items: flex-start; }
+    .replybox textarea { flex: 1; }
     .empty { text-align: center; color: var(--muted); padding: 30px; }
-    .reply { margin-top: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9px; padding: 10px 12px; font-size: 14px; color: #1e3a8a; white-space: pre-wrap; line-height: 1.6; }
-    .reply-label { font-weight: 700; margin-bottom: 4px; }
-    .reply.none { background: #f8fafc; border-color: var(--border); color: var(--muted); font-style: italic; }
+    .namebar { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .namebar input { max-width: 200px; padding: 7px 10px; }
   </style>
 </head>
 <body>
@@ -67,10 +76,14 @@
           <div class="muted" id="count">—</div>
         </div>
         <div style="display:flex; gap:8px;">
-          <button class="btn secondary" id="refreshBtn">刷新 / Refresh</button>
-          <button class="btn secondary" id="logoutBtn">退出 / Sign out</button>
+          <button class="btn secondary small" id="refreshBtn">刷新 / Refresh</button>
+          <button class="btn secondary small" id="logoutBtn">退出 / Sign out</button>
         </div>
       </header>
+      <div class="namebar">
+        <span>你的名字（回复时署名）/ Your name (shown on your replies):</span>
+        <input type="text" id="teamName" placeholder="e.g. Ray" />
+      </div>
       <div class="err" id="listErr"></div>
       <div id="cards"></div>
     </div>
@@ -88,6 +101,9 @@
     const loginErr = document.getElementById('loginErr')
     const listErr = document.getElementById('listErr')
     const loginBtn = document.getElementById('loginBtn')
+    const teamNameInput = document.getElementById('teamName')
+    teamNameInput.value = localStorage.getItem('team_reply_name') || ''
+    teamNameInput.addEventListener('input', () => localStorage.setItem('team_reply_name', teamNameInput.value.trim()))
 
     function showLogin() { listView.style.display = 'none'; loginCard.style.display = 'block' }
     function showList() { loginCard.style.display = 'none'; listView.style.display = 'block'; load() }
@@ -102,52 +118,94 @@
     function esc(str) {
       return String(str == null ? '' : str).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
     }
+    function whoLabel(r) {
+      if (r.author === 'ai') return '🤖 AI (Claude)'
+      if (r.author === 'tester') return '🙋 ' + (r.author_name || 'Tester') + ' （提交者 / submitter）'
+      return '🧑 ' + (r.author_name || 'Team')
+    }
 
     async function load() {
       listErr.classList.remove('show')
       const cards = document.getElementById('cards')
       cards.innerHTML = '<div class="empty">加载中… / Loading…</div>'
-      const { data, error } = await sb.from('feedback').select('*').order('created_at', { ascending: false })
-      if (error) {
+      const [fbRes, repRes] = await Promise.all([
+        sb.from('feedback').select('*').order('created_at', { ascending: false }),
+        sb.from('feedback_replies').select('*').order('created_at', { ascending: true })
+      ])
+      if (fbRes.error) {
         cards.innerHTML = ''
-        listErr.textContent = '读取失败 / Failed to load: ' + error.message
+        listErr.textContent = '读取失败 / Failed to load: ' + fbRes.error.message
         listErr.classList.add('show')
         return
       }
+      const data = fbRes.data || []
+      const reps = (repRes.data) || []
+      const byFb = {}
+      for (const r of reps) { (byFb[r.feedback_id] = byFb[r.feedback_id] || []).push(r) }
+
       document.getElementById('count').textContent = `共 ${data.length} 条 / ${data.length} submissions`
       if (!data.length) { cards.innerHTML = '<div class="empty">暂无反馈 / No submissions yet.</div>'; return }
 
-      const card = document.createElement('div')
-      card.className = 'card'
-      cards.innerHTML = ''
-      cards.appendChild(card)
+      const card = document.createElement('div'); card.className = 'card'
+      cards.innerHTML = ''; cards.appendChild(card)
 
       for (const r of data) {
-        const sub = document.createElement('div')
-        sub.className = 'sub'
-        sub.innerHTML =
+        const sub = document.createElement('div'); sub.className = 'sub'
+        const head = document.createElement('div')
+        head.innerHTML =
           `<div class="row1"><span class="name">${esc(r.name)}</span>` +
           `<span class="badge ${sevClass(r.severity)}">${esc(r.severity || '—')}</span></div>` +
           `<div class="meta">${esc(fmtTime(r.created_at))} · 页面/Page: ${esc(r.page || '—')} · 日期/Date: ${esc(r.date || '—')}</div>` +
-          `<p class="desc">${esc(r.description)}</p>` +
-          `<div class="shots"></div>` +
-          (r.reply
-            ? `<div class="reply"><div class="reply-label">💬 回复 / Reply${r.reply_at ? ' · ' + esc(fmtTime(r.reply_at)) : ''}</div>${esc(r.reply)}</div>`
-            : `<div class="reply none">（暂未回复 / no reply yet）</div>`)
-        card.appendChild(sub)
+          `<p class="desc">${esc(r.description)}</p>`
+        sub.appendChild(head)
 
-        const shots = sub.querySelector('.shots')
+        // screenshots
+        const shots = document.createElement('div'); shots.className = 'shots'
+        sub.appendChild(shots)
         const imgs = Array.isArray(r.images) ? r.images : []
         for (const p of imgs) {
           const { data: signed } = await sb.storage.from(BUCKET).createSignedUrl(p, 3600)
           if (signed && signed.signedUrl) {
-            const a = document.createElement('a')
-            a.href = signed.signedUrl; a.target = '_blank'; a.rel = 'noopener'
+            const a = document.createElement('a'); a.href = signed.signedUrl; a.target = '_blank'; a.rel = 'noopener'
             const img = document.createElement('img'); img.src = signed.signedUrl; img.alt = 'screenshot'
             a.appendChild(img); shots.appendChild(a)
           }
         }
-        if (!imgs.length) shots.innerHTML = '<span class="muted">（无截图 / no screenshots）</span>'
+        if (!imgs.length) shots.remove()
+
+        // reply thread
+        const thread = byFb[r.id] || []
+        if (thread.length) {
+          const tw = document.createElement('div'); tw.className = 'thread'
+          for (const rep of thread) {
+            const d = document.createElement('div'); d.className = 'rep ' + (rep.author || 'team')
+            d.innerHTML = `<div class="who">${esc(whoLabel(rep))} · ${esc(fmtTime(rep.created_at))}</div>${esc(rep.body)}`
+            tw.appendChild(d)
+          }
+          sub.appendChild(tw)
+        }
+
+        // team reply box
+        const box = document.createElement('div'); box.className = 'replybox'
+        const rowf = document.createElement('div'); rowf.className = 'rowflex'
+        const ta = document.createElement('textarea'); ta.placeholder = '写一条回复（测试者也会看到）/ Write a reply (the tester will see it)…'
+        const btn = document.createElement('button'); btn.className = 'btn small'; btn.textContent = '回复 / Reply'
+        btn.onclick = async () => {
+          const body = ta.value.trim()
+          if (!body) return
+          const nm = teamNameInput.value.trim()
+          if (!nm) { listErr.textContent = '请先在上方填写"你的名字" / Please set "Your name" at the top first'; listErr.classList.add('show'); return }
+          btn.disabled = true; btn.textContent = '发送中… / Sending…'
+          const { error } = await sb.from('feedback_replies').insert({ feedback_id: r.id, author: 'team', author_name: nm, body })
+          btn.disabled = false; btn.textContent = '回复 / Reply'
+          if (error) { listErr.textContent = '回复失败 / Reply failed: ' + error.message; listErr.classList.add('show'); return }
+          ta.value = ''
+          load()
+        }
+        rowf.appendChild(ta); rowf.appendChild(btn); box.appendChild(rowf)
+        sub.appendChild(box)
+
+        card.appendChild(sub)
       }
     }
 
@@ -163,8 +221,6 @@
     }
     document.getElementById('refreshBtn').onclick = load
     document.getElementById('logoutBtn').onclick = async () => { await sb.auth.signOut(); showLogin() }
-
-    // 已登录则直接进列表 / if already signed in, go straight to the list
     sb.auth.getSession().then(({ data }) => { if (data.session) showList(); else showLogin() })
   </script>
 </body>
