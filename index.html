@@ -43,6 +43,9 @@
     .bimg img { width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); cursor:pointer; }
     .fixed-badge { display:inline-block; background:#dcfce7; color:var(--ok); font-size:11px; font-weight:700; padding:1px 7px; border-radius:999px; margin-top:5px; }
     .fixbtn { display:inline-block; margin-top:5px; font-size:11px; color:var(--brand); background:none; border:1px solid var(--border); border-radius:6px; padding:2px 7px; cursor:pointer; }
+    .msg-acts { display:flex; gap:10px; margin-top:6px; }
+    .msg-acts button { background:none; border:none; cursor:pointer; font-size:13px; opacity:.55; padding:0; }
+    .msg-acts button:hover { opacity:1; }
     .typing { align-self:flex-start; font-size:13px; color:var(--muted); padding:4px 8px; }
     /* input bar */
     .inputbar { background:#fff; border-top:1px solid var(--border); padding:10px; }
@@ -200,21 +203,21 @@
     const T = {
       en: { faq:'Help', teamIn:'Team', signOut:'Sign out', send:'Send', msgPh:'Type a message…',
         attachHint:'Attach / paste / take a photo · everyone in the group sees this chat',
-        joinTitle:'Join the tester chat', joinSub:'Enter your name to start. No account needed.', yourName:'Your name', join:'Join chat', chooseLang:'Language / 语言',
+        joinTitle:'Join the tester chat', joinSub:'Enter your name to start. No account needed.', yourName:'Your name', join:'Join chat', chooseLang:'Language / 语言', edit:'Edit', unsend:'Unsend', editPrompt:'Edit your message:', delConfirm:'Unsend this message?',
         loginTitle:'Team sign in', loginSub:'For staff only — unlocks team replies, "mark fixed", and the AI switch.', password:'Password', login:'Sign in', cancel:'Cancel',
         faqTitle:'Help / FAQ', faqSearchPh:'Type your question…', aiOn:'AI auto-reply: ON', aiOff:'AI auto-reply: OFF',
         you:'You', team:'team', tester:'tester', aiName:'AI', markFixed:'Mark fixed', fixed:'✅ Fixed', aiTyping:'🤖 AI is typing…', nameNeeded:'Please enter your name', loginFail:'Sign-in failed',
         askLabel:'Not listed? Ask the AI 👇', askPh:'Ask anything about the platform…', ask:'Ask', askSetup:'🤖 The AI assistant is being switched on. For now, please ask in the group chat and we will answer you there.',
         welcome:"👋 Welcome! Post your questions or issues here, with screenshots. The 🤖 AI answers automatically; our team also replies in person. Everyone in the group can see and reply." },
       zh: { faq:'帮助', teamIn:'团队', signOut:'退出', send:'发送', msgPh:'输入消息…',
-        attachHint:'可附图/粘贴/拍照 · 群内所有人都能看到', joinTitle:'加入测试群聊', joinSub:'填名字即可开始，无需账号。', yourName:'你的名字', join:'进入群聊', chooseLang:'选择语言 / Language',
+        attachHint:'可附图/粘贴/拍照 · 群内所有人都能看到', joinTitle:'加入测试群聊', joinSub:'填名字即可开始，无需账号。', yourName:'你的名字', join:'进入群聊', chooseLang:'选择语言 / Language', edit:'编辑', unsend:'撤回', editPrompt:'编辑你的消息：', delConfirm:'撤回这条消息？',
         loginTitle:'团队登录', loginSub:'仅限员工 — 解锁团队回复、标记已修复、AI 开关。', password:'密码', login:'登录', cancel:'取消',
         faqTitle:'帮助 / 常见问题', faqSearchPh:'输入你的问题…', aiOn:'AI 自动回复：开', aiOff:'AI 自动回复：关',
         you:'你', team:'团队', tester:'测试者', aiName:'AI', markFixed:'标记已修复', fixed:'✅ 已修复', aiTyping:'🤖 AI 正在输入…', nameNeeded:'请先填写名字', loginFail:'登录失败',
         askLabel:'没找到？直接问 AI 👇', askPh:'关于平台，随便问…', ask:'提问', askSetup:'🤖 AI 助手正在开通中。暂时请在群聊里提问，我们会在那里回答你。',
         welcome:'👋 欢迎！在这里发你的问题或反馈，可以附截图。🤖 AI 会自动回复；我们团队也会真人回复。群里所有人都能看到并互相回复。' },
       my: { faq:'အကူအညီ', teamIn:'အဖွဲ့', signOut:'ထွက်မည်', send:'ပို့မည်', msgPh:'စာရိုက်ပါ…',
-        attachHint:'ဓာတ်ပုံတွဲ/ကူးထည့်/ရိုက်နိုင် · အဖွဲ့အားလုံးမြင်ရသည်', joinTitle:'စမ်းသပ်သူ ချတ်ထဲဝင်ပါ', joinSub:'အမည်ထည့်၍ စတင်ပါ။ အကောင့်မလို။', yourName:'သင့်အမည်', join:'ချတ်ဝင်ရန်', chooseLang:'ဘာသာစကား / Language',
+        attachHint:'ဓာတ်ပုံတွဲ/ကူးထည့်/ရိုက်နိုင် · အဖွဲ့အားလုံးမြင်ရသည်', joinTitle:'စမ်းသပ်သူ ချတ်ထဲဝင်ပါ', joinSub:'အမည်ထည့်၍ စတင်ပါ။ အကောင့်မလို။', yourName:'သင့်အမည်', join:'ချတ်ဝင်ရန်', chooseLang:'ဘာသာစကား / Language', edit:'ပြင်ရန်', unsend:'ပြန်ရုပ်သိမ်း', editPrompt:'သင့်စာကို ပြင်ပါ:', delConfirm:'ဤစာကို ပြန်ရုပ်သိမ်းမလား?',
         loginTitle:'အဖွဲ့ဝင်ရောက်ရန်', loginSub:'ဝန်ထမ်းသီးသန့် — အဖွဲ့ဖြေ၊ ပြင်ပြီးမှတ်၊ AI ခလုတ်ကို ဖွင့်ပေးသည်။', password:'စကားဝှက်', login:'ဝင်မည်', cancel:'မလုပ်တော့',
         faqTitle:'အကူအညီ / မေးလေ့ရှိသော', faqSearchPh:'မေးခွန်းရိုက်ပါ…', aiOn:'AI အလိုအလျောက်ဖြေ - ဖွင့်', aiOff:'AI အလိုအလျောက်ဖြေ - ပိတ်',
         you:'သင်', team:'အဖွဲ့', tester:'စမ်းသပ်သူ', aiName:'AI', markFixed:'ပြင်ပြီးမှတ်', fixed:'✅ ပြင်ပြီး', aiTyping:'🤖 AI ရေးနေသည်…', nameNeeded:'အမည်ထည့်ပါ', loginFail:'ဝင်ရောက်မှု မအောင်မြင်',
@@ -258,7 +261,7 @@
 
     let cache = []
     async function poll() {
-      const { data, error } = await sb.from('chat_messages').select('*').order('created_at',{ascending:true})
+      const { data, error } = await sb.from('chat_messages').select('id,author,author_name,body,images,fixed,created_at').order('created_at',{ascending:true})
       if (error || !data) return
       const sig = data.length + ':' + (data.length ? data[data.length-1].id + ':' + data.filter(m=>m.fixed).length : '')
       if (sig === lastSig) return
@@ -294,6 +297,12 @@
           if (m.fixed) { const fb=document.createElement('span'); fb.className='fixed-badge'; fb.textContent=t('fixed'); b.appendChild(document.createElement('br')); b.appendChild(fb) }
           else if (me.type==='team') { const btn=document.createElement('button'); btn.className='fixbtn'; btn.textContent=t('markFixed'); btn.onclick=()=>markFixed(m.id); b.appendChild(document.createElement('br')); b.appendChild(btn) }
         }
+        if (canEdit(m)) {
+          const acts=document.createElement('div'); acts.className='msg-acts'
+          const eb=document.createElement('button'); eb.type='button'; eb.textContent='✏️'; eb.title=t('edit'); eb.onclick=()=>editMsg(m)
+          const db=document.createElement('button'); db.type='button'; db.textContent='🗑'; db.title=t('unsend'); db.onclick=()=>delMsg(m)
+          acts.appendChild(eb); acts.appendChild(db); b.appendChild(acts)
+        }
         wrap.appendChild(who); wrap.appendChild(b)
         row.appendChild(av); row.appendChild(wrap)
         msgsEl.appendChild(row)
@@ -304,6 +313,28 @@
     async function markFixed(id) {
       const { error } = await sb.from('chat_messages').update({ fixed:true }).eq('id', id)
       if (!error) { lastSig=''; poll() }
+    }
+
+    // ---------- edit / unsend your own message ----------
+    function myMsgs(){ try { return JSON.parse(localStorage.getItem('chat_my_msgs')||'{}') } catch(e){ return {} } }
+    function canEdit(m){
+      if (m.author==='tester' && myMsgs()[m.id]) return true
+      if (me.type==='team' && m.author==='team' && (m.author_name||'')===(me.name||'')) return true
+      return false
+    }
+    async function editMsg(m){
+      const nt = prompt(t('editPrompt'), m.body||''); if (nt===null) return
+      const v = nt.trim(); if (!v) return
+      if (m.author==='team') { await sb.from('chat_messages').update({ body:v }).eq('id', m.id) }
+      else { await sb.rpc('edit_message', { p_id:m.id, p_token: myMsgs()[m.id], p_body:v }) }
+      lastSig=''; poll()
+    }
+    async function delMsg(m){
+      if (!confirm(t('delConfirm'))) return
+      if (m.author==='team') { await sb.from('chat_messages').delete().eq('id', m.id) }
+      else { await sb.rpc('delete_message', { p_id:m.id, p_token: myMsgs()[m.id] }) }
+      const mm=myMsgs(); delete mm[m.id]; localStorage.setItem('chat_my_msgs', JSON.stringify(mm))
+      lastSig=''; poll()
     }
 
     function showTyping() {
@@ -326,7 +357,13 @@
           if (error) throw error
           paths.push(path)
         }
-        const { error: e2 } = await sb.from('chat_messages').insert({ author: me.type, author_name: me.name, body: body||null, images: paths.length?paths:null })
+        const msgId = crypto.randomUUID()
+        const row = { id: msgId, author: me.type, author_name: me.name, body: body||null, images: paths.length?paths:null }
+        if (me.type === 'tester') {
+          const tok = crypto.randomUUID(); row.edit_token = tok
+          const mm = JSON.parse(localStorage.getItem('chat_my_msgs')||'{}'); mm[msgId] = tok; localStorage.setItem('chat_my_msgs', JSON.stringify(mm))
+        }
+        const { error: e2 } = await sb.from('chat_messages').insert(row)
         if (e2) throw e2
         document.getElementById('input').value=''; chosen=[]; renderPreviews()
         lastSig=''; await poll()
