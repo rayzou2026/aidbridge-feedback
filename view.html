@@ -27,8 +27,12 @@
     .btn:disabled { opacity: .6; cursor: not-allowed; }
     .err { margin-top: 12px; padding: 11px 13px; border-radius: 9px; font-size: 14px; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; display: none; }
     .err.show { display: block; }
-    .sub { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; }
+    .sub { border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; display: flex; gap: 18px; align-items: flex-start; }
     .sub:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .sub .left { flex: 1.1; min-width: 0; }
+    .sub .right { flex: 1; min-width: 0; border-left: 1px solid #eef2f7; padding-left: 18px; }
+    .sub .right h4 { font-size: 13px; color: var(--muted); margin: 0 0 8px; font-weight: 700; }
+    @media (max-width: 640px) { .sub { flex-direction: column; gap: 12px; } .sub .right { border-left: none; padding-left: 0; border-top: 1px solid #eef2f7; padding-top: 12px; } }
     .row1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .name { font-weight: 700; font-size: 16px; }
     .badge { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
@@ -46,9 +50,8 @@
     .rep.team { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
     .rep.tester { background: #f8fafc; border: 1px solid var(--border); color: #334155; }
     .rep .who { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
-    .replybox { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .replybox .rowflex { display: flex; gap: 8px; align-items: flex-start; }
-    .replybox textarea { flex: 1; }
+    .replybox { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+    .replybox textarea { width: 100%; }
     .empty { text-align: center; color: var(--muted); padding: 30px; }
     .namebar { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
     .namebar input { max-width: 200px; padding: 7px 10px; }
@@ -151,17 +154,20 @@
 
       for (const r of data) {
         const sub = document.createElement('div'); sub.className = 'sub'
+        const left = document.createElement('div'); left.className = 'left'
+        const right = document.createElement('div'); right.className = 'right'
+
+        // LEFT: the feedback itself
         const head = document.createElement('div')
         head.innerHTML =
           `<div class="row1"><span class="name">${esc(r.name)}</span>` +
           `<span class="badge ${sevClass(r.severity)}">${esc(r.severity || '—')}</span></div>` +
           `<div class="meta">${esc(fmtTime(r.created_at))} · 页面/Page: ${esc(r.page || '—')} · 日期/Date: ${esc(r.date || '—')}</div>` +
           `<p class="desc">${esc(r.description)}</p>`
-        sub.appendChild(head)
+        left.appendChild(head)
 
-        // screenshots
         const shots = document.createElement('div'); shots.className = 'shots'
-        sub.appendChild(shots)
+        left.appendChild(shots)
         const imgs = Array.isArray(r.images) ? r.images : []
         for (const p of imgs) {
           const { data: signed } = await sb.storage.from(BUCKET).createSignedUrl(p, 3600)
@@ -173,7 +179,9 @@
         }
         if (!imgs.length) shots.remove()
 
-        // reply thread
+        // RIGHT: replies + reply box
+        const rh = document.createElement('h4'); rh.textContent = '回复 / Replies'
+        right.appendChild(rh)
         const thread = byFb[r.id] || []
         if (thread.length) {
           const tw = document.createElement('div'); tw.className = 'thread'
@@ -182,19 +190,20 @@
             d.innerHTML = `<div class="who">${esc(whoLabel(rep))} · ${esc(fmtTime(rep.created_at))}</div>${esc(rep.body)}`
             tw.appendChild(d)
           }
-          sub.appendChild(tw)
+          right.appendChild(tw)
+        } else {
+          const none = document.createElement('div'); none.className = 'muted'; none.style.fontSize = '13px'; none.textContent = '暂无回复 / no replies yet'
+          right.appendChild(none)
         }
 
-        // team reply box
         const box = document.createElement('div'); box.className = 'replybox'
-        const rowf = document.createElement('div'); rowf.className = 'rowflex'
         const ta = document.createElement('textarea'); ta.placeholder = '写一条回复（测试者也会看到）/ Write a reply (the tester will see it)…'
         const btn = document.createElement('button'); btn.className = 'btn small'; btn.textContent = '回复 / Reply'
         btn.onclick = async () => {
           const body = ta.value.trim()
           if (!body) return
           const nm = teamNameInput.value.trim()
-          if (!nm) { listErr.textContent = '请先在上方填写"你的名字" / Please set "Your name" at the top first'; listErr.classList.add('show'); return }
+          if (!nm) { listErr.textContent = '请先在上方填写"你的名字" / Please set "Your name" at the top first'; listErr.classList.add('show'); window.scrollTo({ top: 0, behavior: 'smooth' }); return }
           btn.disabled = true; btn.textContent = '发送中… / Sending…'
           const { error } = await sb.from('feedback_replies').insert({ feedback_id: r.id, author: 'team', author_name: nm, body })
           btn.disabled = false; btn.textContent = '回复 / Reply'
@@ -202,9 +211,10 @@
           ta.value = ''
           load()
         }
-        rowf.appendChild(ta); rowf.appendChild(btn); box.appendChild(rowf)
-        sub.appendChild(box)
+        box.appendChild(ta); box.appendChild(btn)
+        right.appendChild(box)
 
+        sub.appendChild(left); sub.appendChild(right)
         card.appendChild(sub)
       }
     }
