@@ -53,9 +53,6 @@
 
     <div class="card" id="formCard">
       <form id="feedbackForm">
-        <label>访问码 <span class="sub">Access code</span> <span class="req">*</span></label>
-        <input type="text" id="accessCode" autocomplete="off" placeholder="请输入团队访问码 / team access code" />
-
         <label>姓名 <span class="sub">Name</span> <span class="req">*</span></label>
         <input type="text" id="name" placeholder="您的姓名 / your name" />
 
@@ -111,7 +108,6 @@
     const SUPABASE_URL = 'https://setbceatrzvznttmleii.supabase.co'
     const SUPABASE_KEY = 'sb_publishable_5RrkzfW_tUjAItrIjBVFCQ_ksZ6jkpc'
     const BUCKET = 'feedback-shots'
-    const ACCESS_CODE = 'aidbridge-inspect' // 轻量门禁 / light gate
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -133,9 +129,6 @@
       dateEl.min = today
       dateEl.value = today
     }
-    const savedCode = localStorage.getItem('feedback_access_code')
-    if (savedCode) document.getElementById('accessCode').value = savedCode
-
     let chosen = []
 
     function renderPreviews() {
@@ -189,8 +182,6 @@
       errBox.style.display = 'none'
       const name = document.getElementById('name').value.trim()
       const desc = document.getElementById('description').value.trim()
-      const code = document.getElementById('accessCode').value.trim()
-      if (code !== ACCESS_CODE) return showErr('访问码错误 / Wrong access code')
       if (!name) return showErr('请填写姓名 / Please enter your name')
       if (!desc) return showErr('请填写问题描述 / Please enter a description')
 
@@ -219,7 +210,6 @@
         })
         if (insErr) throw new Error(insErr.message)
 
-        localStorage.setItem('feedback_access_code', code)
         formCard.style.display = 'none'
         doneCard.style.display = 'block'
       } catch (err) {
