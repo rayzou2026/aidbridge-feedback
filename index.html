@@ -244,7 +244,7 @@
     async function refreshAuth() {
       const { data } = await sb.auth.getSession()
       me.type = data.session ? 'team' : 'tester'
-      document.getElementById('aiToggleWrap').style.display = (AI_ENGINE_READY && data.session) ? 'flex' : 'none'
+      document.getElementById('aiToggleWrap').style.display = data.session ? 'flex' : 'none'
       document.getElementById('teamBtn').textContent = data.session ? t('signOut') : t('teamIn')
     }
 
