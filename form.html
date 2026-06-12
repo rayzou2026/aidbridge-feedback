@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AidBridge · 测试反馈问卷 / Tester Feedback Survey</title>
+  <style>
+    :root { --brand:#2563eb; --brand-dark:#1d4ed8; --bg:#eef2f7; --card:#fff; --text:#1e293b; --muted:#64748b; --border:#dbe2ea; --ok:#16a34a; --danger:#dc2626; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+    .wrap { max-width:760px; margin:0 auto; padding:0 0 60px; }
+    .top { background:var(--brand); color:#fff; padding:16px 18px; display:flex; align-items:center; gap:10px; position:sticky; top:0; z-index:10; }
+    .top .brand { font-weight:700; font-size:17px; display:inline-flex; align-items:center; gap:8px; }
+    .brandlogo { width:30px; height:30px; border-radius:7px; background:#fff; object-fit:contain; padding:1px; }
+    .bar { height:4px; background:#cbd5e1; position:sticky; top:56px; z-index:9; }
+    .bar > i { display:block; height:100%; width:0; background:var(--ok); transition:width .25s; }
+    .intro { background:#fff; border:1px solid var(--border); border-radius:0 0 14px 14px; padding:18px; margin-bottom:14px; font-size:14px; color:#334155; }
+    .intro h1 { margin:0 0 8px; font-size:19px; color:var(--text); }
+    .intro p { margin:6px 0; }
+    .intro .em { color:var(--brand-dark); font-weight:600; }
+    .sec { background:#fff; border:1px solid var(--border); border-radius:14px; padding:18px; margin:0 14px 14px; }
+    .sec > h2 { margin:0 0 4px; font-size:16.5px; color:var(--brand-dark); }
+    .sec > .sub { margin:0 0 12px; font-size:12.5px; color:var(--muted); }
+    .sec.optional { border-style:dashed; border-color:#cbd5e1; background:#fbfcfe; }
+    .optflag { display:inline-block; font-size:11px; font-weight:700; color:#b45309; background:#fef3c7; border-radius:999px; padding:2px 9px; margin-bottom:8px; }
+    .q { padding:13px 0; border-top:1px solid #f1f5f9; }
+    .q:first-of-type { border-top:none; }
+    .q .label { font-size:14px; font-weight:600; margin-bottom:9px; }
+    .q .label .req { color:var(--danger); margin-left:3px; }
+    .opts { display:flex; flex-direction:column; gap:7px; }
+    .opt { display:flex; align-items:flex-start; gap:9px; font-size:13.5px; padding:8px 11px; border:1px solid var(--border); border-radius:9px; cursor:pointer; background:#fff; }
+    .opt:hover { background:#f8fafc; }
+    .opt input { margin-top:2px; flex-shrink:0; }
+    .opt.checked { border-color:var(--brand); background:#eff4ff; }
+    .scale { display:flex; gap:6px; flex-wrap:wrap; }
+    .scale label { flex:1; min-width:54px; text-align:center; border:1px solid var(--border); border-radius:9px; padding:9px 4px; cursor:pointer; font-size:13.5px; background:#fff; }
+    .scale label.checked { border-color:var(--brand); background:#eff4ff; color:var(--brand-dark); font-weight:700; }
+    .scale input { display:none; }
+    .scale-ends { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:5px; }
+    input[type=text], textarea { width:100%; border:1px solid var(--border); border-radius:9px; padding:10px 12px; font-size:14px; font-family:inherit; }
+    input[type=text]:focus, textarea:focus { outline:none; border-color:var(--brand); }
+    textarea { resize:vertical; min-height:74px; }
+    .submitbar { margin:18px 14px 0; }
+    .submitbtn { width:100%; padding:15px; background:var(--brand); color:#fff; border:none; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; }
+    .submitbtn:disabled { opacity:.5; }
+    .note { font-size:12px; color:var(--muted); text-align:center; margin-top:10px; }
+    .done { display:none; text-align:center; padding:50px 24px; }
+    .done.show { display:block; }
+    .done .big { font-size:52px; }
+    .done h2 { margin:14px 0 6px; }
+    .done p { color:var(--muted); }
+    .done button { margin-top:18px; padding:11px 22px; border:1px solid var(--border); background:#fff; border-radius:10px; cursor:pointer; font-size:14px; }
+    .err { display:none; background:#fef2f2; color:var(--danger); border:1px solid #fecaca; border-radius:9px; padding:11px 13px; font-size:13.5px; margin:0 14px 14px; }
+    .err.show { display:block; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <span class="brand"><img class="brandlogo" src="https://setbceatrzvznttmleii.supabase.co/storage/v1/object/public/chat-shots/logo.jpg" alt="AidBridge" /> AidBridge</span>
+  </div>
+  <div class="bar"><i id="progFill"></i></div>
+
+  <div class="wrap" id="formWrap">
+    <div class="intro">
+      <h1>测试反馈问卷 / Tester Feedback Survey</h1>
+      <p>感谢你帮忙测试「爱心桥 AidBridge」平台！请按你测试到的部分如实填写。<br/>
+         Thanks for testing the AidBridge platform! Please answer honestly for the parts you tried.</p>
+      <p><span class="em">关于平台 / About:</span> 它连接捐赠者和缅甸境内经核实的受助机构。平台<b>从不经手资金</b> —— 捐赠者自己买实物，寄到中国仓 → 转运到缅甸仓 → 机构凭「取件码」领取。<br/>
+         It connects donors with verified institutions in Myanmar. The platform <b>never handles money</b> — donors buy real goods themselves: China warehouse → Myanmar warehouse → institution picks up with a code.</p>
+      <p>约 10–15 分钟。没测到的部分（仓库 / 后台）可以直接跳过。<br/>
+         About 10–15 min. Skip any portal you did not test (warehouse, admin).</p>
+    </div>
+
+    <div class="err" id="err"></div>
+    <div id="sections"></div>
+
+    <div class="submitbar">
+      <button class="submitbtn" id="submitBtn">提交反馈 / Submit feedback</button>
+      <div class="note">提交后会进入团队的反馈记录。/ Your answers go to the team's feedback log.</div>
+    </div>
+  </div>
+
+  <div class="done" id="done">
+    <div class="big">🎉</div>
+    <h2>已收到，非常感谢！/ Received — thank you!</h2>
+    <p>你的反馈已提交给团队。/ Your feedback has been sent to the team.</p>
+    <button id="againBtn">再填一份 / Submit another</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // 复用「测试群聊」同一个 Supabase 后端：每份问卷作为一条 tester 消息写入 chat_messages，
+    // 这样 ./pull.sh 和团队聊天页都能直接看到，无需任何数据库改动。
+    // Reuse the same Supabase backend as the tester chat: each survey is written into chat_messages
+    // as one tester message, so ./pull.sh and the team chat read it with no DB changes.
+    const SUPABASE_URL = 'https://setbceatrzvznttmleii.supabase.co'
+    const SUPABASE_KEY = 'sb_publishable_5RrkzfW_tUjAItrIjBVFCQ_ksZ6jkpc'
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    // 评分量表标签 / scale labels
+    const SCALE = { lo:'很差 Poor', hi:'很好 Great' }
+
+    // 问卷结构：11 个部分，双语题目。type: radio/checkbox/scale/text/para。
+    // Survey structure: 11 parts, bilingual questions.
+    const SECTIONS = [
+      { id:'A', title:'第一部分 · 关于你 / Part A — About you', sub:'先做个简单介绍，方便我们理解你的反馈背景。',
+        qs:[
+          { id:'name', type:'text', required:true, q:'你的名字（或代号）/ Your name (or nickname)', ph:'例如 Josh' },
+          { id:'roles', type:'checkbox', required:true, q:'你以哪些身份测试了平台？/ Which role(s) did you test as?',
+            opts:['公众捐赠者 Public donor','受助机构 Receiving institution（/my）','仓库人员 Warehouse staff（/warehouse）','管理员 / 超级管理员 Admin / Super-admin（/admin）'] },
+          { id:'device', type:'text', q:'你用什么设备和浏览器测试？/ What device & browser?', ph:'e.g. iPhone Safari, Windows Chrome' },
+          { id:'mainlang', type:'radio', q:'你主要用哪种语言测试？/ Main testing language?',
+            opts:['English','中文 Chinese','မြန်မာ Burmese','混合 Mixed / 多种'] },
+        ] },
+
+      { id:'B', title:'第二部分 · 第一印象与首页 / Part B — First impressions & homepage', sub:'打开网站首页后的最初感受。',
+        qs:[
+          { id:'b_understand', type:'radio', q:'打开首页 30 秒内，你明白这个平台是做什么的吗？/ Within 30s, did you understand what the platform is for?',
+            opts:['完全明白 Yes, fully','大概明白 Somewhat','不明白 No'] },
+          { id:'b_inwords', type:'para', q:'用你自己的话说，这个平台是做什么的？/ In your own words, what does this platform do?',
+            ph:'凭你自己的理解写，不用看官方介绍。' },
+          { id:'b_nomoney', type:'radio', q:'你是否注意到「平台从不经手资金、只协调实物」？/ Did you notice it never handles money, only physical goods?',
+            opts:['注意到了，也理解 Yes, and understood','看到了但没太懂 Saw it but unclear','完全没注意到 Did not notice'] },
+          { id:'b_clarity', type:'scale', q:'首页的清晰度与可信度 / Homepage clarity & trustworthiness' },
+          { id:'b_broken', type:'para', q:'首页上有让你困惑、或看起来「坏掉/不对劲」的地方吗？/ Anything confusing or broken on the homepage?' },
+        ] },
+
+      { id:'C', title:'第三部分 · 援助需求与受助机构 / Part C — Needs & institutions', sub:'浏览「需求列表」和「受助机构」时的体验。',
+        qs:[
+          { id:'c_findneeds', type:'radio', q:'你能找到并浏览「援助需求」列表吗？/ Could you find & browse the aid needs?',
+            opts:['能，很容易 Yes, easily','能，但不好找 Yes, but hard to find','找不到 No'] },
+          { id:'c_needclear', type:'radio', q:'对某个需求，是否清楚「需要什么、需要多少」？/ Was it clear WHAT & HOW MUCH is needed?',
+            opts:['清楚 Clear','部分清楚 Partly','看不懂 Confusing'] },
+          { id:'c_inst', type:'radio', q:'你能找到并理解「受助机构」吗？/ Could you find & understand the institutions?',
+            opts:['能 Yes','部分 Partly','不能 No'] },
+          { id:'c_trust', type:'scale', q:'机构页面是否让你觉得「真实、可信、已核实」/ Did institution pages feel real & verified?' },
+          { id:'c_comment', type:'para', q:'关于「需求 / 机构」的任何意见 / Any comments on needs / institutions?' },
+        ] },
+
+      { id:'D', title:'第四部分 · 捐赠与认捐流程（核心）/ Part D — Donating / pledging (core)', sub:'平台最核心、也最特别的地方：平台不收钱，捐赠者自己买实物寄到仓库。',
+        qs:[
+          { id:'d_tried', type:'radio', q:'你有尝试「认捐 / 捐赠」某个需求吗？/ Did you try to pledge / donate?',
+            opts:['有 Yes','没有 No'] },
+          { id:'d_easy', type:'scale', q:'捐赠流程是否容易一步步走完？/ Was the donation flow easy to follow?' },
+          { id:'d_howto', type:'radio', q:'你是否真的理解「怎么捐」—— 自己下单买实物、寄到仓库地址？/ Did you understand HOW to donate (buy goods yourself, ship to the warehouse)?',
+            opts:['完全理解 Yes, clear','大概懂 Somewhat','没搞懂，很困惑 No, confused'] },
+          { id:'d_cart', type:'radio', q:'购物车与结算是否清晰、可用？/ Were cart & checkout clear and working?',
+            opts:['好用 Worked well','有问题 Had problems','没试 Did not try'] },
+          { id:'d_addr', type:'radio', q:'认捐时，仓库 / 收货地址是否清楚显示？/ Was the warehouse / receiving address shown clearly?',
+            opts:['有，很清楚 Yes, clearly','有但不清楚 Shown but unclear','没看到 Did not see it','没走到这一步 Did not reach this'] },
+          { id:'d_broken', type:'para', q:'捐赠流程里有让你困惑、或卡住/出错的步骤吗？请描述 / Any confusing or broken step while donating?' },
+        ] },
+
+      { id:'E', title:'第五部分 · 物流追踪与取件码 / Part E — Tracking & pickup code', sub:'物资寄出后的「追踪」与机构领取用的「取件码」。',
+        qs:[
+          { id:'e_used', type:'radio', q:'你用过「追踪 / Track」功能吗？/ Did you use the "Track" feature?',
+            opts:['用过 Yes','没用过 No'] },
+          { id:'e_status', type:'scale', q:'物流状态是否容易看懂（现在到哪一步）？/ Was the shipment status easy to understand?' },
+          { id:'e_code', type:'radio', q:'「取件码」的概念你能理解吗？/ Did the "pickup code" concept make sense?',
+            opts:['理解 Yes','部分理解 Partly','不理解 No','没接触到 Did not encounter it'] },
+          { id:'e_comment', type:'para', q:'关于追踪 / 取件码的任何意见 / Any comments on tracking / pickup code?' },
+        ] },
+
+      { id:'F', title:'第六部分 · 捐赠者账户 / Part F — Donor account', sub:'注册、登录，以及「我的认捐 / 历史 / 收藏 / 关注 / 设置」。',
+        qs:[
+          { id:'f_signup', type:'radio', q:'你有注册 / 登录账号吗？/ Did you register / sign in?',
+            opts:['成功了 Yes, worked','没试 Did not try','试了但失败 Tried but failed'] },
+          { id:'f_fail', type:'para', q:'如果注册或登录失败，发生了什么？/ If sign-up or login failed, what happened?', ph:'出错提示、卡住的地方…' },
+          { id:'f_pages', type:'scale', q:'账户页面（认捐/历史/收藏/关注/设置）是否有用且正常？/ Were the account pages useful & working?' },
+          { id:'f_comment', type:'para', q:'关于账户功能的任何意见 / Any comments on the account features?' },
+        ] },
+
+      { id:'G', title:'第七部分 · 多语言与无障碍 / Part G — Language & accessibility', sub:'平台支持 English / 中文 / 缅甸语，并应支持屏幕阅读器等无障碍使用。',
+        qs:[
+          { id:'g_switch', type:'radio', q:'你有切换过语言吗？/ Did you switch languages?',
+            opts:['切换过 Yes','没有 No'] },
+          { id:'g_leak', type:'radio', q:'有没有看到「停留在错误语言」或「没翻译」的文字？/ Any text in the wrong language or untranslated?',
+            opts:['没有，都翻译了 No, all translated','有，露出了英文 Yes, English leaked','有，其它情况 Yes, other'] },
+          { id:'g_where', type:'para', q:'哪些页面有「未翻译 / 语言错误」的文字？/ Which page(s) had untranslated / wrong-language text?' },
+          { id:'g_a11y', type:'radio', q:'如果你用屏幕阅读器或纯键盘，能正常用吗？/ Screen reader or keyboard-only — did it work?',
+            opts:['能 Yes','不能 No','没测 Did not test'] },
+        ] },
+
+      { id:'H', optional:true, title:'第八部分 · 受助机构门户（可选）/ Part H — Institution portal (optional)',
+        sub:'⚠️ 只有当你以「受助机构」身份测试（/my）时才填；没测就跳过。Only fill this if you tested as a receiving institution.',
+        qs:[
+          { id:'h_tested', type:'radio', q:'你测试了「受助机构门户」吗？/ Did you test the institution portal?',
+            opts:['测了 Yes','没测 —— 跳过本部分 No — skip this part'] },
+          { id:'h_save', type:'radio', q:'你能编辑机构资料（简介、封面等）并成功保存吗？/ Could you edit the org profile and did it SAVE?',
+            opts:['能，保存成功 Yes, saved','保存不了 / 刷新就丢 No, did not save','没试 Did not try'] },
+          { id:'h_incoming', type:'scale', q:'「待收物资」与「援助申请」页面是否清晰？/ Were "incoming aid" & "requests" clear?' },
+          { id:'h_feedback', type:'radio', q:'收到物资后，你能提交「反馈（照片 + 感谢）」吗？/ Could you submit feedback (photos + thanks)?',
+            opts:['能 Yes','不能 No','没试 Did not try'] },
+          { id:'h_comment', type:'para', q:'关于「受助机构门户」的任何意见 / Any comments on the institution portal?' },
+        ] },
+
+      { id:'I', optional:true, title:'第九部分 · 仓库人员门户（可选）/ Part I — Warehouse portal (optional)',
+        sub:'⚠️ 只有当你以「仓库人员」身份测试（/warehouse）时才填；没测就跳过。Only fill this if you tested as warehouse staff.',
+        qs:[
+          { id:'i_tested', type:'radio', q:'你测试了「仓库门户」吗？/ Did you test the warehouse portal?',
+            opts:['测了 Yes','没测 —— 跳过本部分 No — skip this part'] },
+          { id:'i_inbound', type:'scale', q:'「入库收件」是否能正常登记到件包裹？/ Could you log incoming parcels in inbound receiving?' },
+          { id:'i_stock', type:'radio', q:'「库存管理」和「快递查询」是否符合预期？/ Did stock management & courier lookup work?',
+            opts:['正常 Yes','有问题 Had problems','没试 Did not try'] },
+          { id:'i_comment', type:'para', q:'关于「仓库门户」的任何意见 / Any comments on the warehouse portal?' },
+        ] },
+
+      { id:'J', optional:true, title:'第十部分 · 后台管理（可选）/ Part J — Admin back office (optional)',
+        sub:'⚠️ 只有当你以「管理员 / 超级管理员」身份测试（/admin）时才填；没测就跳过。Only fill this if you tested the admin back office.',
+        qs:[
+          { id:'j_tested', type:'radio', q:'你测试了「后台管理」吗？/ Did you test the admin back office?',
+            opts:['测了 Yes','没测 —— 跳过本部分 No — skip this part'] },
+          { id:'j_areas', type:'checkbox', q:'你试了哪些后台模块？/ Which admin areas did you try?',
+            opts:['仪表盘 Dashboard','审核队列 Review queues','人员名录 People','仓库操作 Operations','内容编辑 Content','审计 Audit','系统设置 System'] },
+          { id:'j_content', type:'radio', q:'内容编辑（博客、首页照片、联系、页脚等）保存后，能在公开站看到变化吗？/ Did content edits save AND show on the public site?',
+            opts:['能 Yes','不能 No','部分 Partly','没试 Did not try'] },
+          { id:'j_review', type:'scale', q:'审核 / 审批流程是否合理、好懂？/ Did the review / approval flows make sense?' },
+          { id:'j_comment', type:'para', q:'关于「后台管理」的任何意见 / Any comments on the admin back office?' },
+        ] },
+
+      { id:'K', title:'第十一部分 · 问题、信任与总体 / Part K — Bugs, trust & overall', sub:'最后几道总结题，对我们最重要，请尽量填。',
+        qs:[
+          { id:'k_bugs', type:'para', q:'你遇到过哪些报错、打不开的页面、或「点了没反应/不能用」的东西？请逐条列出。/ List any errors, broken pages, or things that did not work.',
+            ph:'越具体越好：哪个页面、点了什么、看到什么。' },
+          { id:'k_overall', type:'scale', q:'总体来说，这个平台好用吗？/ Overall, how easy was the platform to use?' },
+          { id:'k_trust', type:'radio', required:true, q:'如果平台正式上线，你会信任它、愿意用它真实捐赠吗？/ If it were live, would you trust it enough to really donate?',
+            opts:['会 Yes','可能会 Maybe','不会 No'] },
+          { id:'k_confusing', type:'para', q:'最让你「困惑」的一件事是什么？/ The single most confusing thing?' },
+          { id:'k_best', type:'para', q:'你觉得「最好 / 最喜欢」的一件事是什么？/ The single best thing you liked?' },
+          { id:'k_suggest', type:'para', q:'还有其它建议吗？/ Any other suggestions?' },
+        ] },
+    ]
+
+    // ---------- 渲染 render ----------
+    const root = document.getElementById('sections')
+    SECTIONS.forEach(sec => {
+      const box = document.createElement('div')
+      box.className = 'sec' + (sec.optional ? ' optional' : '')
+      let html = ''
+      if (sec.optional) html += '<span class="optflag">可选 · 没测就跳过 / Optional</span>'
+      html += '<h2>' + sec.title + '</h2>'
+      if (sec.sub) html += '<div class="sub">' + sec.sub + '</div>'
+      box.innerHTML = html
+      sec.qs.forEach(q => box.appendChild(renderQ(q)))
+      root.appendChild(box)
+    })
+
+    function renderQ(q) {
+      const d = document.createElement('div'); d.className = 'q'; d.dataset.qid = q.id
+      const lab = document.createElement('div'); lab.className = 'label'
+      lab.innerHTML = esc(q.q) + (q.required ? '<span class="req">*</span>' : '')
+      d.appendChild(lab)
+
+      if (q.type === 'text') {
+        const i = document.createElement('input'); i.type = 'text'; i.placeholder = q.ph || ''
+        i.dataset.val = ''; i.oninput = e => { i.dataset.val = e.target.value; updateProgress() }
+        d.appendChild(i)
+      } else if (q.type === 'para') {
+        const t = document.createElement('textarea'); t.placeholder = q.ph || ''
+        t.oninput = () => updateProgress(); d.appendChild(t)
+      } else if (q.type === 'radio' || q.type === 'checkbox') {
+        const wrap = document.createElement('div'); wrap.className = 'opts'
+        q.opts.forEach((o, idx) => {
+          const l = document.createElement('label'); l.className = 'opt'
+          const inp = document.createElement('input'); inp.type = q.type; inp.name = q.id; inp.value = o
+          inp.onchange = () => { syncChecked(wrap, q.type); updateProgress() }
+          const span = document.createElement('span'); span.textContent = o
+          l.appendChild(inp); l.appendChild(span); wrap.appendChild(l)
+        })
+        d.appendChild(wrap)
+      } else if (q.type === 'scale') {
+        const s = document.createElement('div'); s.className = 'scale'
+        for (let n = 1; n <= 5; n++) {
+          const l = document.createElement('label')
+          const inp = document.createElement('input'); inp.type = 'radio'; inp.name = q.id; inp.value = String(n)
+          inp.onchange = () => { [...s.querySelectorAll('label')].forEach(x => x.classList.remove('checked')); l.classList.add('checked'); updateProgress() }
+          l.appendChild(inp); l.appendChild(document.createTextNode(String(n))); s.appendChild(l)
+        }
+        d.appendChild(s)
+        const ends = document.createElement('div'); ends.className = 'scale-ends'
+        ends.innerHTML = '<span>' + SCALE.lo + '</span><span>' + SCALE.hi + '</span>'
+        d.appendChild(ends)
+      }
+      return d
+    }
+
+    function syncChecked(wrap, type) {
+      [...wrap.querySelectorAll('.opt')].forEach(l => l.classList.toggle('checked', l.querySelector('input').checked))
+    }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])) }
+
+    // ---------- 进度条 progress ----------
+    function totalQ() { return SECTIONS.reduce((n, s) => n + s.qs.length, 0) }
+    function answeredQ() {
+      let n = 0
+      SECTIONS.forEach(s => s.qs.forEach(q => { if (getVal(q)) n++ }))
+      return n
+    }
+    function updateProgress() {
+      const pct = Math.round(answeredQ() / totalQ() * 100)
+      document.getElementById('progFill').style.width = pct + '%'
+    }
+
+    // ---------- 读取答案 read answers ----------
+    function getVal(q) {
+      const d = document.querySelector('.q[data-qid="' + q.id + '"]'); if (!d) return ''
+      if (q.type === 'text') { const i = d.querySelector('input[type=text]'); return i ? i.value.trim() : '' }
+      if (q.type === 'para') { const t = d.querySelector('textarea'); return t ? t.value.trim() : '' }
+      if (q.type === 'radio' || q.type === 'scale') { const c = d.querySelector('input:checked'); return c ? c.value : '' }
+      if (q.type === 'checkbox') { return [...d.querySelectorAll('input:checked')].map(i => i.value).join(' / ') }
+      return ''
+    }
+
+    // ---------- 提交 submit ----------
+    function showErr(msg) { const e = document.getElementById('err'); e.textContent = msg; e.classList.add('show'); e.scrollIntoView({ behavior:'smooth', block:'center' }) }
+    function hideErr() { document.getElementById('err').classList.remove('show') }
+
+    document.getElementById('submitBtn').onclick = async () => {
+      hideErr()
+      // 必填校验 required check
+      for (const s of SECTIONS) for (const q of s.qs) {
+        if (q.required && !getVal(q)) {
+          showErr('请先回答必填项（带 *）：/ Please answer the required question (marked *): ' + q.q.split(' / ')[0])
+          const d = document.querySelector('.q[data-qid="' + q.id + '"]'); if (d) d.scrollIntoView({ behavior:'smooth', block:'center' })
+          return
+        }
+      }
+      const name = getVal({ id:'name', type:'text' }) || 'tester'
+
+      // 拼成可读 markdown，作为一条 tester 消息存进 chat_messages
+      const lines = ['📋 **测试反馈问卷 / Tester Feedback Survey** — ' + name, '']
+      SECTIONS.forEach(s => {
+        const answered = s.qs.filter(q => getVal(q))
+        if (!answered.length) return
+        lines.push('### ' + s.title)
+        answered.forEach(q => { lines.push('**' + q.q + '**'); lines.push(getVal(q)); lines.push('') })
+      })
+      const body = lines.join('\n')
+
+      const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.textContent = '提交中… / Submitting…'
+      try {
+        const row = { id: crypto.randomUUID(), author: 'tester', author_name: name, body, images: null }
+        const { error } = await sb.from('chat_messages').insert(row)
+        if (error) throw error
+        document.getElementById('formWrap').style.display = 'none'
+        document.getElementById('done').classList.add('show')
+        window.scrollTo(0, 0)
+      } catch (e) {
+        showErr('提交失败 / Submit failed: ' + (e.message || e))
+        btn.disabled = false; btn.textContent = '提交反馈 / Submit feedback'
+      }
+    }
+
+    document.getElementById('againBtn').onclick = () => location.reload()
+  </script>
+</body>
+</html>
