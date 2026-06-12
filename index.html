@@ -12,7 +12,8 @@
     .app { max-width:760px; margin:0 auto; height:100vh; display:flex; flex-direction:column; background:var(--bg); }
     /* header */
     .top { background:var(--brand); color:#fff; padding:10px 14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .top .brand { font-weight:700; font-size:16px; margin-right:auto; }
+    .top .brand { font-weight:700; font-size:16px; margin-right:auto; display:inline-flex; align-items:center; gap:7px; }
+    .brandlogo { width:28px; height:28px; border-radius:7px; background:#fff; object-fit:contain; padding:1px; }
     .top button, .top select { font-size:13px; border:none; border-radius:8px; padding:7px 10px; cursor:pointer; background:rgba(255,255,255,.18); color:#fff; }
     .top select { background:rgba(255,255,255,.18); }
     .top button:hover { background:rgba(255,255,255,.30); }
@@ -88,12 +89,21 @@
     .faq-a { display:none; padding:0 18px 13px; color:#334155; font-size:13.5px; white-space:pre-wrap; line-height:1.6; }
     .faq-item.open .faq-a { display:block; }
     .faq-empty { padding:20px; text-align:center; color:var(--muted); font-size:13.5px; }
+    .faq-ask { border-top:1px solid var(--border); padding:12px 18px 16px; }
+    .faq-ask-label { font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px; }
+    .faq-ask-thread { display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+    .faq-ask-thread .qa { font-size:13.5px; border-radius:9px; padding:8px 11px; white-space:pre-wrap; line-height:1.55; }
+    .faq-ask-thread .qa.you { background:#dbeafe; align-self:flex-end; max-width:90%; }
+    .faq-ask-thread .qa.ai { background:#f5f3ff; border:1px solid #ddd6fe; color:#3730a3; align-self:flex-start; max-width:95%; }
+    .faq-ask-row { display:flex; gap:8px; }
+    .faq-ask-row input { flex:1; padding:10px 12px; border:1px solid var(--border); border-radius:9px; font-size:14.5px; }
+    .faq-ask-row button { background:var(--brand); color:#fff; border:none; border-radius:9px; padding:9px 16px; font-weight:700; cursor:pointer; }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="top">
-      <span class="brand">🌉 AidBridge</span>
+      <span class="brand"><img class="brandlogo" src="https://setbceatrzvznttmleii.supabase.co/storage/v1/object/public/chat-shots/logo.jpg" alt="AidBridge" /> AidBridge</span>
       <span class="toggle" id="aiToggleWrap" style="display:none;">
         <span id="aiToggleLabel">AI</span>
         <label class="switch"><input type="checkbox" id="aiToggle" /><span class="slider"></span></label>
@@ -155,6 +165,14 @@
       <div class="faq-head"><h3 data-t="faqTitle">Help / FAQ</h3><button class="faq-close" id="faqClose">×</button></div>
       <div class="faq-search"><input type="text" id="faqSearch" data-tph="faqSearchPh" placeholder="Type your question…" /></div>
       <div class="faq-list" id="faqList"></div>
+      <div class="faq-ask">
+        <div class="faq-ask-label" data-t="askLabel">Not listed? Ask the AI 👇</div>
+        <div class="faq-ask-thread" id="faqAskThread"></div>
+        <div class="faq-ask-row">
+          <input type="text" id="faqAskInput" data-tph="askPh" placeholder="Ask anything about the platform…" />
+          <button id="faqAskBtn" data-t="ask">Ask</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -176,18 +194,21 @@
         loginTitle:'Team sign in', loginSub:'For staff only — unlocks team replies, "mark fixed", and the AI switch.', password:'Password', login:'Sign in', cancel:'Cancel',
         faqTitle:'Help / FAQ', faqSearchPh:'Type your question…', aiOn:'AI auto-reply: ON', aiOff:'AI auto-reply: OFF',
         you:'You', team:'team', tester:'tester', aiName:'AI', markFixed:'Mark fixed', fixed:'✅ Fixed', aiTyping:'🤖 AI is typing…', nameNeeded:'Please enter your name', loginFail:'Sign-in failed',
+        askLabel:'Not listed? Ask the AI 👇', askPh:'Ask anything about the platform…', ask:'Ask', askSetup:'🤖 The AI assistant is being switched on. For now, please ask in the group chat and we will answer you there.',
         welcome:"👋 Welcome! Post your questions or issues here, with screenshots. The 🤖 AI answers automatically; our team also replies in person. Everyone in the group can see and reply." },
       zh: { faq:'帮助', teamIn:'团队', signOut:'退出', send:'发送', msgPh:'输入消息…',
         attachHint:'可附图/粘贴/拍照 · 群内所有人都能看到', joinTitle:'加入测试群聊', joinSub:'填名字即可开始，无需账号。', yourName:'你的名字', join:'进入群聊',
         loginTitle:'团队登录', loginSub:'仅限员工 — 解锁团队回复、标记已修复、AI 开关。', password:'密码', login:'登录', cancel:'取消',
         faqTitle:'帮助 / 常见问题', faqSearchPh:'输入你的问题…', aiOn:'AI 自动回复：开', aiOff:'AI 自动回复：关',
         you:'你', team:'团队', tester:'测试者', aiName:'AI', markFixed:'标记已修复', fixed:'✅ 已修复', aiTyping:'🤖 AI 正在输入…', nameNeeded:'请先填写名字', loginFail:'登录失败',
+        askLabel:'没找到？直接问 AI 👇', askPh:'关于平台，随便问…', ask:'提问', askSetup:'🤖 AI 助手正在开通中。暂时请在群聊里提问，我们会在那里回答你。',
         welcome:'👋 欢迎！在这里发你的问题或反馈，可以附截图。🤖 AI 会自动回复；我们团队也会真人回复。群里所有人都能看到并互相回复。' },
       my: { faq:'အကူအညီ', teamIn:'အဖွဲ့', signOut:'ထွက်မည်', send:'ပို့မည်', msgPh:'စာရိုက်ပါ…',
         attachHint:'ဓာတ်ပုံတွဲ/ကူးထည့်/ရိုက်နိုင် · အဖွဲ့အားလုံးမြင်ရသည်', joinTitle:'စမ်းသပ်သူ ချတ်ထဲဝင်ပါ', joinSub:'အမည်ထည့်၍ စတင်ပါ။ အကောင့်မလို။', yourName:'သင့်အမည်', join:'ချတ်ဝင်ရန်',
         loginTitle:'အဖွဲ့ဝင်ရောက်ရန်', loginSub:'ဝန်ထမ်းသီးသန့် — အဖွဲ့ဖြေ၊ ပြင်ပြီးမှတ်၊ AI ခလုတ်ကို ဖွင့်ပေးသည်။', password:'စကားဝှက်', login:'ဝင်မည်', cancel:'မလုပ်တော့',
         faqTitle:'အကူအညီ / မေးလေ့ရှိသော', faqSearchPh:'မေးခွန်းရိုက်ပါ…', aiOn:'AI အလိုအလျောက်ဖြေ - ဖွင့်', aiOff:'AI အလိုအလျောက်ဖြေ - ပိတ်',
         you:'သင်', team:'အဖွဲ့', tester:'စမ်းသပ်သူ', aiName:'AI', markFixed:'ပြင်ပြီးမှတ်', fixed:'✅ ပြင်ပြီး', aiTyping:'🤖 AI ရေးနေသည်…', nameNeeded:'အမည်ထည့်ပါ', loginFail:'ဝင်ရောက်မှု မအောင်မြင်',
+        askLabel:'မတွေ့ဘူးလား? AI ကိုမေးပါ 👇', askPh:'ပလပ်ဖောင်းအကြောင်း မေးပါ…', ask:'မေးမည်', askSetup:'🤖 AI ကို ဖွင့်နေဆဲ။ ယခု အဖွဲ့ချတ်တွင် မေးပါ၊ ထိုနေရာမှ ဖြေပါမည်။',
         welcome:'👋 ကြိုဆိုပါသည်။ မေးခွန်း/ပြဿနာများကို ဖန်သားပြင်ဓာတ်ပုံနှင့်တကွ ဤနေရာတွင်တင်ပါ။ 🤖 AI က အလိုအလျောက်ဖြေသည်၊ အဖွဲ့ကလည်း ကိုယ်တိုင်ဖြေသည်။ အဖွဲ့အားလုံး မြင်ပြီး ပြန်ဖြေနိုင်သည်။' }
     }
     let lang = localStorage.getItem('chat_lang') || 'en'
@@ -360,7 +381,16 @@
       { q:`捐赠流程是怎样的？ / How does donating work?`, a:`①找需求 →②结算确认承诺(不在平台付款) →③平台对接机构直接安排 →④物资经中转点运送、可追踪 →⑤机构收到发照片致谢。\n1) find a need; 2) confirm a pledge at checkout (no payment taken); 3) connect with the org directly; 4) goods ship via transit points, tracked; 5) org posts photo + thanks.`, k:`how donate process 流程 捐赠 步骤` },
       { q:`"结算"会扣款吗？ / Does checkout charge me?`, a:`不会。只是确认你想支持的需求并对接机构。\nNo. It only confirms what you want to support and connects you with the org.`, k:`checkout pay charge 结算 扣款` },
       { q:`平台支持哪些语言？ / What languages?`, a:`英文、中文、缅甸文，完全对等。\nEnglish, Chinese, Burmese — fully equivalent.`, k:`language 语言 中文 英文 缅甸` },
-      { q:`我的信息安全吗？ / Is my data safe?`, a:`不出售用户数据；AidBridge 只是撮合方，从不作为捐赠当事一方。\nUser data is not sold; AidBridge is only a matchmaker, never a party to the donation.`, k:`privacy data 隐私 安全` }
+      { q:`我的信息安全吗？ / Is my data safe?`, a:`不出售用户数据；AidBridge 只是撮合方，从不作为捐赠当事一方。\nUser data is not sold; AidBridge is only a matchmaker, never a party to the donation.`, k:`privacy data 隐私 安全` },
+      { q:`AidBridge 是 App 还是网站？ / Is AidBridge an app or a website?`, a:`是网站，手机和电脑浏览器都能用，不用安装。\nIt is a website — works in phone and computer browsers, nothing to install.`, k:`app website install 网站 安装 手机` },
+      { q:`怎么切换语言？ / How do I switch the language?`, a:`用页面顶部的语言选择（英文 / 中文 / 缅甸文）。\nUse the language switcher at the top of the page (English / 中文 / Burmese).`, k:`language switch 语言 切换 中文 英文 缅甸` },
+      { q:`机构收到物资后会怎样？ / What does an organization do after receiving aid?`, a:`机构会发一张照片和感谢，经审核后出现在"展示 / Showcase"页。\nThe organization posts a photo and a thank-you; after review it appears on the Showcase page.`, k:`organization received showcase thanks 机构 收到 展示 感谢` },
+      { q:`"新闻 / News"页是什么？ / What is the News page?`, a:`AidBridge 团队的公告、合作和一线报道。\nAnnouncements, partnerships, and field reports from the AidBridge team.`, k:`news blog announcements 新闻 公告 博客` },
+      { q:`关注机构后会怎样？ / What happens when I follow an organization?`, a:`你会收到该机构的最新动态。\nYou get that organization's latest updates.`, k:`follow updates organization 关注 动态 机构` },
+      { q:`能把需求收藏起来以后再捐吗？ / Can I save a need for later?`, a:`可以，在"收藏 / Saved"里收藏，之后再处理。\nYes — bookmark it under "Saved" and act on it later.`, k:`save bookmark saved later 收藏 保存 以后` },
+      { q:`我的捐赠记录在哪看？ / Where can I see my past contributions?`, a:`登录后在"历史 / History"里查看。\nAfter signing in, see them under "History".`, k:`history past contributions 历史 记录 捐赠` },
+      { q:`我能直接联系机构吗？ / Can I contact the organization directly?`, a:`可以，AidBridge 会把你和机构对接，由你们直接安排捐赠。\nYes — AidBridge connects you with the organization to arrange the donation directly.`, k:`contact organization directly 联系 机构 直接` },
+      { q:`有收据或退税吗？ / Is there a receipt or tax deduction?`, a:`AidBridge 不经手钱款，所以不开收据；你是直接捐给机构的，收据请向机构询问。\nAidBridge does not handle money, so it issues no receipts; since you donate directly, ask the organization about a receipt.`, k:`receipt tax deduction 收据 退税 发票` }
     ]
     const faqList=document.getElementById('faqList')
     function renderFaq(filter){
@@ -374,6 +404,23 @@
     document.getElementById('faqClose').onclick=()=>document.getElementById('faqOv').classList.remove('show')
     document.getElementById('faqOv').onclick=e=>{ if(e.target.id==='faqOv') document.getElementById('faqOv').classList.remove('show') }
     document.getElementById('faqSearch').addEventListener('input',e=>renderFaq(e.target.value))
+
+    // ---------- Ask the AI (for questions not in the list) ----------
+    const faqAskThread=document.getElementById('faqAskThread')
+    function addQA(cls,text){ const d=document.createElement('div'); d.className='qa '+cls; d.textContent=text; faqAskThread.appendChild(d); d.scrollIntoView({block:'nearest'}) }
+    async function askAI(){
+      const inp=document.getElementById('faqAskInput'); const q=inp.value.trim(); if(!q) return
+      addQA('you', q); inp.value=''
+      if(!AI_ENGINE_READY){ addQA('ai', t('askSetup')); return }
+      const btn=document.getElementById('faqAskBtn'); btn.disabled=true; const old=btn.textContent; btn.textContent='…'
+      try{
+        const r=await fetch(`${SUPABASE_URL}/functions/v1/ai-ask`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify({question:q,lang})})
+        const j=await r.json(); addQA('ai', (j&&j.answer)||t('askSetup'))
+      }catch(e){ addQA('ai', t('askSetup')) }
+      finally{ btn.disabled=false; btn.textContent=old }
+    }
+    document.getElementById('faqAskBtn').onclick=askAI
+    document.getElementById('faqAskInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); askAI() } })
 
     // ---------- language ----------
     document.getElementById('langSel').onchange=e=>{ lang=e.target.value; localStorage.setItem('chat_lang',lang); applyLang() }
