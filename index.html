@@ -32,12 +32,18 @@
     .row.other { align-self:flex-start; }
     .avatar { width:34px; height:34px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#fff; }
     .av-ai { background:#7c3aed; } .av-team { background:var(--ok); } .av-tester { background:#0ea5e9; } .av-me { background:var(--brand); }
+    /* 团队回复头像：AidBridge logo（白底圆形） */
+    .av-logo { background:#fff; border:1px solid var(--border); overflow:hidden; padding:0; }
+    .av-img { width:100%; height:100%; border-radius:50%; object-fit:contain; display:block; }
     .bubble { background:#fff; border:1px solid var(--border); border-radius:14px; padding:8px 11px; font-size:14.5px; line-height:1.5; white-space:pre-wrap; word-break:break-word; }
     .row.mine .bubble { background:#dbeafe; border-color:#bfdbfe; }
     .bubble.ai { background:#f5f3ff; border-color:#ddd6fe; }
     .bubble.team { background:#ecfdf5; border-color:#a7f3d0; }
     .who { font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:2px; }
     .who .tag { font-weight:600; }
+    /* 团队回复署名里的 AidBridge 小 logo 和真人名字后缀 */
+    .who-logo { width:14px; height:14px; border-radius:3px; object-fit:contain; background:#fff; vertical-align:-3px; margin-right:3px; }
+    .who-name { font-weight:600; color:var(--muted); }
     .time { font-size:10.5px; color:#94a3b8; margin-top:3px; }
     .bimg { margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
     .bimg img { width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); cursor:pointer; }
@@ -276,12 +282,22 @@
         const mine = isMine(m)
         const row = document.createElement('div'); row.className = 'row ' + (mine ? 'mine' : 'other')
         const av = document.createElement('div')
-        const avc = m.author==='ai'?'av-ai':(m.author==='team'?'av-team':(mine?'av-me':'av-tester'))
-        av.className = 'avatar ' + avc
-        av.textContent = m.author==='ai' ? '🤖' : initials(m.author_name)
+        if (m.author==='team') {
+          // 团队回复用 AidBridge logo 作头像（官方品牌形象）
+          av.className = 'avatar av-logo'
+          av.innerHTML = '<img class="av-img" src="'+pubUrl('logo.jpg')+'" alt="AidBridge" />'
+        } else {
+          const avc = m.author==='ai'?'av-ai':(mine?'av-me':'av-tester')
+          av.className = 'avatar ' + avc
+          av.textContent = m.author==='ai' ? '🤖' : initials(m.author_name)
+        }
         const wrap = document.createElement('div')
         const who = document.createElement('div'); who.className='who'
-        const tag = m.author==='ai' ? '🤖 '+t('aiName') : (m.author==='team' ? '🧑 '+esc(m.author_name||'')+' ('+t('team')+')' : esc(m.author_name||'')+(mine?' ('+t('you')+')':''))
+        // AI 保持原样；团队回复署名改为 AidBridge 品牌（小 logo + AidBridge），真人名字作小后缀
+        let tag
+        if (m.author==='ai') tag = '🤖 '+t('aiName')
+        else if (m.author==='team') tag = '<img class="who-logo" src="'+pubUrl('logo.jpg')+'" alt="" />AidBridge' + (m.author_name ? ' <span class="who-name">· '+esc(m.author_name)+'</span>' : '')
+        else tag = esc(m.author_name||'')+(mine?' ('+t('you')+')':'')
         who.innerHTML = tag
         const b = document.createElement('div'); b.className = 'bubble ' + (m.author==='ai'?'ai':(m.author==='team'?'team':''))
         if (m.body) b.textContent = m.body
