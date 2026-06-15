@@ -253,7 +253,7 @@
     let lastSig = ''
     const msgsEl = document.getElementById('msgs')
 
-    function fmtTime(iso){ return iso ? String(iso).replace('T',' ').slice(11,16) : '' }
+    function fmtTime(iso){ if(!iso) return ''; try{ return new Date(iso).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) }catch(e){ return '' } }
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) }
     function pubUrl(p){ return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${p}` }
     function initials(n){ return (n||'?').trim().slice(0,2).toUpperCase() }
@@ -369,7 +369,18 @@
         lastSig=''; await poll()
         // Phase 2: trigger AI auto-reply for tester messages
         if (AI_ENGINE_READY && me.type==='tester' && aiEnabled) { showTyping(); try { await fetch(`${SUPABASE_URL}/functions/v1/ai-reply`, {method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}, body: JSON.stringify({ body, images: paths })}) } catch(e){} hideTyping(); lastSig=''; poll() }
-      } catch(e) { alert('Send failed: '+(e.message||e)) }
+      } catch(e) {
+        const msg = (e && e.message) || String(e)
+        if (me.type === 'team' && /row-level security|jwt|token|auth/i.test(msg)) {
+          // 团队登录过期：清掉过期会话，提示重新登录（已输入的消息会保留）
+          alert('你的团队登录已过期，请重新登录后再发送。\nYour team login expired — please sign in again, then resend.')
+          try { await sb.auth.signOut() } catch(_) {}
+          await refreshAuth()
+          document.getElementById('loginModal').style.display = 'flex'
+        } else {
+          alert('Send failed: ' + msg)
+        }
+      }
       finally { btn.disabled=false }
     }
 
