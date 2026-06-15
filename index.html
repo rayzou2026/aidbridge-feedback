@@ -347,6 +347,8 @@
       const body = document.getElementById('input').value.trim()
       if (!body && !chosen.length) return
       if (!me.name) { openGate(); return }
+      // 防止"团队"会话已过期却仍以 team 身份发送 / if claiming team but session is gone, post as tester (no RLS error)
+      if (me.type === 'team') { const { data: s } = await sb.auth.getSession(); if (!s.session) { me.type = 'tester'; await refreshAuth() } }
       const btn = document.getElementById('sendBtn'); btn.disabled = true
       try {
         const paths = []
@@ -481,6 +483,14 @@
     // ---------- language ----------
     document.getElementById('langSel').onchange=e=>{ lang=e.target.value; localStorage.setItem('chat_lang',lang); applyLang() }
     document.querySelectorAll('.langbtn').forEach(b=>{ b.onclick=()=>{ lang=b.getAttribute('data-lang'); localStorage.setItem('chat_lang',lang); applyLang() } })
+
+    // ---------- keep team-state in sync with the real login (prevents the RLS "send failed") ----------
+    sb.auth.onAuthStateChange((_event, session) => {
+      me.type = session ? 'team' : 'tester'
+      const wrap = document.getElementById('aiToggleWrap'); if (wrap) wrap.style.display = (AI_ENGINE_READY && session) ? 'flex' : 'none'
+      const tb = document.getElementById('teamBtn'); if (tb) tb.textContent = session ? t('signOut') : t('teamIn')
+      lastSig = ''; if (cache.length) render(true)
+    })
 
     // ---------- boot ----------
     ;(async function(){
