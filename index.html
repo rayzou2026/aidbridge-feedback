@@ -58,6 +58,7 @@
     .time { font-size:10.5px; color:#94a3b8; margin-top:3px; }
     .bimg { margin-top:6px; display:flex; flex-wrap:wrap; gap:6px; }
     .bimg img { width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--border); cursor:pointer; }
+    .bimg video { width:240px; max-width:78vw; max-height:240px; border-radius:8px; border:1px solid var(--border); background:#000; }
     .fixed-badge { display:inline-block; background:#dcfce7; color:var(--ok); font-size:11px; font-weight:700; padding:1px 7px; border-radius:999px; margin-top:5px; }
     .fixbtn { display:inline-block; margin-top:5px; font-size:11px; color:var(--brand); background:none; border:1px solid var(--border); border-radius:6px; padding:2px 7px; cursor:pointer; }
     /* 操作按钮：仿真实平台评论的 Like · Reply · Edit · Delete 文字按钮 */
@@ -73,6 +74,7 @@
     .previews { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
     .previews .pv { position:relative; width:56px; height:56px; }
     .previews img { width:56px; height:56px; object-fit:cover; border-radius:7px; border:1px solid var(--border); }
+    .previews video { width:56px; height:56px; object-fit:cover; border-radius:7px; border:1px solid var(--border); background:#000; }
     .previews .x { position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:#0009; color:#fff; border:none; cursor:pointer; font-size:12px; line-height:1; }
     .inrow { display:flex; gap:8px; align-items:flex-end; }
     .inrow textarea { flex:1; resize:none; border:1px solid var(--border); border-radius:10px; padding:10px; font-size:15px; font-family:inherit; max-height:120px; }
@@ -155,7 +157,7 @@
       <div class="inrow">
         <button class="iconbtn" id="photoBtn" title="photo">📎</button>
         <button class="iconbtn" id="camBtn" title="camera">📷</button>
-        <input type="file" id="fileInput" accept="image/*" multiple style="display:none" />
+        <input type="file" id="fileInput" accept="image/*,video/*" multiple style="display:none" />
         <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" />
         <textarea id="input" rows="1" data-tph="msgPh" placeholder="Type a message…"></textarea>
         <button class="sendbtn" id="sendBtn" data-t="send">Send</button>
@@ -226,7 +228,7 @@
     // ---------- i18n ----------
     const T = {
       en: { brandSub:'Tester Feedback', notice:'🧪 For testing & feedback only — this is NOT the real AidBridge platform. Report any problems here.', faq:'Help', teamIn:'Admin Login', signOut:'Sign out', send:'Send', msgPh:'Type a message…',
-        attachHint:'Attach / paste / take a photo · everyone in the group sees this chat',
+        attachHint:'Attach photo / video · paste · everyone in the group sees this chat', fileTooBig:'File too large (max 50MB). Please use a shorter video clip.',
         joinTitle:'Join the tester chat', joinSub:'Enter your name to start. No account needed.', yourName:'Your name', join:'Join chat', chooseLang:'Language / 语言', edit:'Edit', unsend:'Unsend', editPrompt:'Edit your message:', delConfirm:'Unsend this message?',
         loginTitle:'Admin sign in', loginSub:'For staff only — unlocks admin replies, "mark fixed", and the AI switch.', password:'Password', login:'Sign in', cancel:'Cancel',
         faqTitle:'Help / FAQ', faqSearchPh:'Type your question…', aiOn:'AI auto-reply: ON', aiOff:'AI auto-reply: OFF',
@@ -234,14 +236,14 @@
         askLabel:'Not answered above? Ask it in the chat 👇', askPh:'Type your question…', ask:'Send to chat', askSetup:'🤖 The AI assistant is being switched on. For now, please ask in the group chat and we will answer you there.',
         welcome:"👋 Welcome! Post your questions or issues here, with screenshots. The 🤖 AI answers automatically; our team also replies in person. Everyone in the group can see and reply." },
       zh: { brandSub:'测试反馈', notice:'🧪 仅用于测试和反馈 —— 这里不是真正的 AidBridge 平台，请在这里反馈你发现的问题。', faq:'帮助', teamIn:'管理员登录', signOut:'退出', send:'发送', msgPh:'输入消息…',
-        attachHint:'可附图/粘贴/拍照 · 群内所有人都能看到', joinTitle:'加入测试群聊', joinSub:'填名字即可开始，无需账号。', yourName:'你的名字', join:'进入群聊', chooseLang:'选择语言 / Language', edit:'编辑', unsend:'撤回', editPrompt:'编辑你的消息：', delConfirm:'撤回这条消息？',
+        attachHint:'可附图片/视频 · 粘贴 · 群内所有人都能看到', fileTooBig:'文件太大（最大 50MB），请用更短的视频片段。', joinTitle:'加入测试群聊', joinSub:'填名字即可开始，无需账号。', yourName:'你的名字', join:'进入群聊', chooseLang:'选择语言 / Language', edit:'编辑', unsend:'撤回', editPrompt:'编辑你的消息：', delConfirm:'撤回这条消息？',
         loginTitle:'管理员登录', loginSub:'仅限员工 — 解锁管理员回复、标记已修复、AI 开关。', password:'密码', login:'登录', cancel:'取消',
         faqTitle:'帮助 / 常见问题', faqSearchPh:'输入你的问题…', aiOn:'AI 自动回复：开', aiOff:'AI 自动回复：关',
         you:'你', team:'团队', tester:'测试者', reply:'回复', replyingTo:'回复', like:'赞', delete:'删除', aiName:'AI', markFixed:'标记已修复', fixed:'✅ 已修复', aiTyping:'🤖 AI 正在输入…', nameNeeded:'请先填写名字', loginFail:'登录失败',
         askLabel:'上面没有？发到群聊里问 👇', askPh:'输入你的问题…', ask:'发到群聊', askSetup:'🤖 AI 助手正在开通中。暂时请在群聊里提问，我们会在那里回答你。',
         welcome:'👋 欢迎！在这里发你的问题或反馈，可以附截图。🤖 AI 会自动回复；我们团队也会真人回复。群里所有人都能看到并互相回复。' },
       my: { brandSub:'စမ်းသပ်အကြံပြု', notice:'🧪 စမ်းသပ်ခြင်းနှင့် အကြံပြုချက်အတွက်သာ — ဤနေရာသည် တကယ့် AidBridge ပလက်ဖောင်း မဟုတ်ပါ။ ပြဿနာများကို ဤနေရာတွင် တင်ပြပါ။', faq:'အကူအညီ', teamIn:'အက်ဒမင်ဝင်ရန်', signOut:'ထွက်မည်', send:'ပို့မည်', msgPh:'စာရိုက်ပါ…',
-        attachHint:'ဓာတ်ပုံတွဲ/ကူးထည့်/ရိုက်နိုင် · အဖွဲ့အားလုံးမြင်ရသည်', joinTitle:'စမ်းသပ်သူ ချတ်ထဲဝင်ပါ', joinSub:'အမည်ထည့်၍ စတင်ပါ။ အကောင့်မလို။', yourName:'သင့်အမည်', join:'ချတ်ဝင်ရန်', chooseLang:'ဘာသာစကား / Language', edit:'ပြင်ရန်', unsend:'ပြန်ရုပ်သိမ်း', editPrompt:'သင့်စာကို ပြင်ပါ:', delConfirm:'ဤစာကို ပြန်ရုပ်သိမ်းမလား?',
+        attachHint:'ဓာတ်ပုံ/ဗီဒီယိုတွဲ · ကူးထည့် · အဖွဲ့အားလုံးမြင်ရသည်', fileTooBig:'ဖိုင်ကြီးလွန်းသည် (အများဆုံး 50MB)။ ဗီဒီယိုတိုတို သုံးပါ။', joinTitle:'စမ်းသပ်သူ ချတ်ထဲဝင်ပါ', joinSub:'အမည်ထည့်၍ စတင်ပါ။ အကောင့်မလို။', yourName:'သင့်အမည်', join:'ချတ်ဝင်ရန်', chooseLang:'ဘာသာစကား / Language', edit:'ပြင်ရန်', unsend:'ပြန်ရုပ်သိမ်း', editPrompt:'သင့်စာကို ပြင်ပါ:', delConfirm:'ဤစာကို ပြန်ရုပ်သိမ်းမလား?',
         loginTitle:'အက်ဒမင်ဝင်ရောက်ရန်', loginSub:'ဝန်ထမ်းသီးသန့် — အက်ဒမင်ဖြေ၊ ပြင်ပြီးမှတ်၊ AI ခလုတ်ကို ဖွင့်ပေးသည်။', password:'စကားဝှက်', login:'ဝင်မည်', cancel:'မလုပ်တော့',
         faqTitle:'အကူအညီ / မေးလေ့ရှိသော', faqSearchPh:'မေးခွန်းရိုက်ပါ…', aiOn:'AI အလိုအလျောက်ဖြေ - ဖွင့်', aiOff:'AI အလိုအလျောက်ဖြေ - ပိတ်',
         you:'သင်', team:'အဖွဲ့', tester:'စမ်းသပ်သူ', reply:'ပြန်ဖြေ', replyingTo:'ပြန်ဖြေနေသည်', like:'ကြိုက်တယ်', delete:'ဖျက်', aiName:'AI', markFixed:'ပြင်ပြီးမှတ်', fixed:'✅ ပြင်ပြီး', aiTyping:'🤖 AI ရေးနေသည်…', nameNeeded:'အမည်ထည့်ပါ', loginFail:'ဝင်ရောက်မှု မအောင်မြင်',
@@ -280,6 +282,8 @@
     function fmtTime(iso){ if(!iso) return ''; try{ return new Date(iso).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) }catch(e){ return '' } }
     function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) }
     function pubUrl(p){ return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${p}` }
+    // 按扩展名判断附件是不是视频（存储路径形如 1718....mp4）
+    function isVideoPath(p){ return /\.(mp4|mov|webm|m4v|avi|mkv|ogv|3gp)$/i.test(p||'') }
     function initials(n){ return (n||'?').trim().slice(0,2).toUpperCase() }
     function isMine(m){ return m.author===me.type && (m.author_name||'')===(me.name||'') }
 
@@ -358,7 +362,10 @@
         } else if (m.body) { b.textContent = m.body }
         if (Array.isArray(m.images) && m.images.length) {
           const ig = document.createElement('div'); ig.className='bimg'
-          m.images.forEach(p=>{ const im=document.createElement('img'); im.src=pubUrl(p); im.onclick=()=>openLb(pubUrl(p)); ig.appendChild(im) })
+          m.images.forEach(p=>{
+            if (isVideoPath(p)) { const vid=document.createElement('video'); vid.src=pubUrl(p); vid.controls=true; vid.playsInline=true; ig.appendChild(vid) }
+            else { const im=document.createElement('img'); im.src=pubUrl(p); im.onclick=()=>openLb(pubUrl(p)); ig.appendChild(im) }
+          })
           b.appendChild(ig)
         }
         const tm = document.createElement('div'); tm.className='time'; tm.textContent = fmtTime(m.created_at)
@@ -503,9 +510,24 @@
     // ---------- images ----------
     function renderPreviews(){
       const c=document.getElementById('previews'); c.innerHTML=''
-      chosen.forEach((f,i)=>{ const d=document.createElement('div'); d.className='pv'; const im=document.createElement('img'); im.src=URL.createObjectURL(f); const x=document.createElement('button'); x.className='x'; x.textContent='×'; x.onclick=()=>{chosen.splice(i,1); renderPreviews()}; d.appendChild(im); d.appendChild(x); c.appendChild(d) })
+      chosen.forEach((f,i)=>{
+        const d=document.createElement('div'); d.className='pv'
+        let media
+        if (f.type && f.type.startsWith('video/')) { media=document.createElement('video'); media.src=URL.createObjectURL(f); media.muted=true; media.playsInline=true }
+        else { media=document.createElement('img'); media.src=URL.createObjectURL(f) }
+        const x=document.createElement('button'); x.className='x'; x.textContent='×'; x.onclick=()=>{chosen.splice(i,1); renderPreviews()}
+        d.appendChild(media); d.appendChild(x); c.appendChild(d)
+      })
     }
-    function addFiles(list){ for(const f of list){ if(f.type&&f.type.startsWith('image/')) chosen.push(f) } if(chosen.length>10) chosen=chosen.slice(0,10); renderPreviews() }
+    const MAX_UPLOAD_BYTES = 50*1024*1024  // 单个文件最大 50MB（视频请用短片段）
+    function addFiles(list){
+      for(const f of list){
+        if(!(f.type && (f.type.startsWith('image/') || f.type.startsWith('video/')))) continue  // 只收图片/视频
+        if(f.size > MAX_UPLOAD_BYTES){ alert(t('fileTooBig')); continue }
+        chosen.push(f)
+      }
+      if(chosen.length>10) chosen=chosen.slice(0,10); renderPreviews()
+    }
     document.getElementById('replyBarX').onclick=clearReply
     document.getElementById('photoBtn').onclick=()=>document.getElementById('fileInput').click()
     document.getElementById('camBtn').onclick=()=>document.getElementById('camInput').click()
