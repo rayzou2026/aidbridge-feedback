@@ -438,7 +438,7 @@
       let snip = (m.body||'').replace(/^↩ [^\n]*\n?/, '').replace(/\s+/g,' ').trim()
       if (!snip && Array.isArray(m.images) && m.images.length) snip = '🖼'
       if (snip.length > 50) snip = snip.slice(0,50)+'…'
-      replyTo = { id: m.id, who, snippet: snip }
+      replyTo = { id: m.id, who, snippet: snip, parentAuthor: m.author }
       document.getElementById('replyBarTxt').textContent = '↩ ' + t('replyingTo') + ' ' + who + ': ' + snip
       document.getElementById('replyBar').style.display = 'flex'
       const inp = document.getElementById('input'); inp.focus()
@@ -469,6 +469,7 @@
         }
         // 如果是在回复某条消息：正文首行存被回复消息的 id（↩<id>），换行后是回复正文；渲染时挂到该消息下面
         const replyParentId = replyTo ? replyTo.id : null
+        const replyToAi = replyTo ? replyTo.parentAuthor === 'ai' : false   // 是否在回复 AI 自己的消息（追问 AI）
         if (replyParentId) body = '↩' + replyParentId + '\n' + (body || '')
         const msgId = crypto.randomUUID()
         const row = { id: msgId, author: me.type, author_name: me.name, body: body||null, images: paths.length?paths:null }
@@ -482,8 +483,8 @@
         lastSig=''; await poll()
         // 滚动到刚发出的消息（回复挂在被回复消息下面，不一定在底部）
         const sentEl = msgsEl.querySelector('[data-mid="'+msgId+'"]'); if (sentEl) sentEl.scrollIntoView({ block:'center' })
-        // 触发 AI 自动回复：仅对"新的顶层测试者反馈"。回复（包括团队/测试者互相回复）不触发，AI 不插话
-        if (AI_ENGINE_READY && me.type==='tester' && aiEnabled && !replyParentId) { showTyping(); try { await fetch(`${SUPABASE_URL}/functions/v1/ai-reply`, {method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}, body: JSON.stringify({ body, images: paths })}) } catch(e){} hideTyping(); lastSig=''; poll() }
+        // 触发 AI 自动回复：新的顶层反馈，或"回复 AI 自己消息"（追问 AI）。互相回复（回复的是非 AI 消息）不触发
+        if (AI_ENGINE_READY && me.type==='tester' && aiEnabled && (!replyParentId || replyToAi)) { showTyping(); try { await fetch(`${SUPABASE_URL}/functions/v1/ai-reply`, {method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}, body: JSON.stringify({ body, images: paths })}) } catch(e){} hideTyping(); lastSig=''; poll() }
       } catch(e) {
         const msg = (e && e.message) || String(e)
         if (me.type === 'team' && /row-level security|jwt|token|auth/i.test(msg)) {
