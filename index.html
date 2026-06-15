@@ -63,6 +63,8 @@
     .msg-acts { display:flex; gap:10px; margin-top:6px; }
     .msg-acts button { background:none; border:none; cursor:pointer; font-size:13px; opacity:.55; padding:0; }
     .msg-acts button:hover { opacity:1; }
+    /* 回复缩进到被回复消息下方，左侧加一条连接线表示从属关系 */
+    .row.threaded { border-left:2px solid #c7d2fe; padding-left:8px; }
     .typing { align-self:flex-start; font-size:13px; color:var(--muted); padding:4px 8px; }
     /* input bar */
     .inputbar { background:#fff; border-top:1px solid var(--border); padding:10px; }
@@ -138,7 +140,7 @@
         <option value="my">မြန်မာ</option>
       </select>
       <button id="faqBtn">❓ <span data-t="faq">Help</span></button>
-      <button id="teamBtn"><span data-t="teamIn">Admin</span></button>
+      <button id="teamBtn"><span data-t="teamIn">Admin Login</span></button>
     </div>
 
     <div class="notice" data-t="notice">🧪 For testing & feedback only — this is NOT the real AidBridge platform. Report any problems here.</div>
@@ -221,7 +223,7 @@
 
     // ---------- i18n ----------
     const T = {
-      en: { brandSub:'Tester Feedback', notice:'🧪 For testing & feedback only — this is NOT the real AidBridge platform. Report any problems here.', faq:'Help', teamIn:'Admin', signOut:'Sign out', send:'Send', msgPh:'Type a message…',
+      en: { brandSub:'Tester Feedback', notice:'🧪 For testing & feedback only — this is NOT the real AidBridge platform. Report any problems here.', faq:'Help', teamIn:'Admin Login', signOut:'Sign out', send:'Send', msgPh:'Type a message…',
         attachHint:'Attach / paste / take a photo · everyone in the group sees this chat',
         joinTitle:'Join the tester chat', joinSub:'Enter your name to start. No account needed.', yourName:'Your name', join:'Join chat', chooseLang:'Language / 语言', edit:'Edit', unsend:'Unsend', editPrompt:'Edit your message:', delConfirm:'Unsend this message?',
         loginTitle:'Admin sign in', loginSub:'For staff only — unlocks admin replies, "mark fixed", and the AI switch.', password:'Password', login:'Sign in', cancel:'Cancel',
@@ -229,14 +231,14 @@
         you:'You', team:'team', tester:'tester', reply:'Reply', replyingTo:'Replying to', aiName:'AI', markFixed:'Mark fixed', fixed:'✅ Fixed', aiTyping:'🤖 AI is typing…', nameNeeded:'Please enter your name', loginFail:'Sign-in failed',
         askLabel:'Not answered above? Ask it in the chat 👇', askPh:'Type your question…', ask:'Send to chat', askSetup:'🤖 The AI assistant is being switched on. For now, please ask in the group chat and we will answer you there.',
         welcome:"👋 Welcome! Post your questions or issues here, with screenshots. The 🤖 AI answers automatically; our team also replies in person. Everyone in the group can see and reply." },
-      zh: { brandSub:'测试反馈', notice:'🧪 仅用于测试和反馈 —— 这里不是真正的 AidBridge 平台，请在这里反馈你发现的问题。', faq:'帮助', teamIn:'管理员', signOut:'退出', send:'发送', msgPh:'输入消息…',
+      zh: { brandSub:'测试反馈', notice:'🧪 仅用于测试和反馈 —— 这里不是真正的 AidBridge 平台，请在这里反馈你发现的问题。', faq:'帮助', teamIn:'管理员登录', signOut:'退出', send:'发送', msgPh:'输入消息…',
         attachHint:'可附图/粘贴/拍照 · 群内所有人都能看到', joinTitle:'加入测试群聊', joinSub:'填名字即可开始，无需账号。', yourName:'你的名字', join:'进入群聊', chooseLang:'选择语言 / Language', edit:'编辑', unsend:'撤回', editPrompt:'编辑你的消息：', delConfirm:'撤回这条消息？',
         loginTitle:'管理员登录', loginSub:'仅限员工 — 解锁管理员回复、标记已修复、AI 开关。', password:'密码', login:'登录', cancel:'取消',
         faqTitle:'帮助 / 常见问题', faqSearchPh:'输入你的问题…', aiOn:'AI 自动回复：开', aiOff:'AI 自动回复：关',
         you:'你', team:'团队', tester:'测试者', reply:'回复', replyingTo:'回复', aiName:'AI', markFixed:'标记已修复', fixed:'✅ 已修复', aiTyping:'🤖 AI 正在输入…', nameNeeded:'请先填写名字', loginFail:'登录失败',
         askLabel:'上面没有？发到群聊里问 👇', askPh:'输入你的问题…', ask:'发到群聊', askSetup:'🤖 AI 助手正在开通中。暂时请在群聊里提问，我们会在那里回答你。',
         welcome:'👋 欢迎！在这里发你的问题或反馈，可以附截图。🤖 AI 会自动回复；我们团队也会真人回复。群里所有人都能看到并互相回复。' },
-      my: { brandSub:'စမ်းသပ်အကြံပြု', notice:'🧪 စမ်းသပ်ခြင်းနှင့် အကြံပြုချက်အတွက်သာ — ဤနေရာသည် တကယ့် AidBridge ပလက်ဖောင်း မဟုတ်ပါ။ ပြဿနာများကို ဤနေရာတွင် တင်ပြပါ။', faq:'အကူအညီ', teamIn:'အက်ဒမင်', signOut:'ထွက်မည်', send:'ပို့မည်', msgPh:'စာရိုက်ပါ…',
+      my: { brandSub:'စမ်းသပ်အကြံပြု', notice:'🧪 စမ်းသပ်ခြင်းနှင့် အကြံပြုချက်အတွက်သာ — ဤနေရာသည် တကယ့် AidBridge ပလက်ဖောင်း မဟုတ်ပါ။ ပြဿနာများကို ဤနေရာတွင် တင်ပြပါ။', faq:'အကူအညီ', teamIn:'အက်ဒမင်ဝင်ရန်', signOut:'ထွက်မည်', send:'ပို့မည်', msgPh:'စာရိုက်ပါ…',
         attachHint:'ဓာတ်ပုံတွဲ/ကူးထည့်/ရိုက်နိုင် · အဖွဲ့အားလုံးမြင်ရသည်', joinTitle:'စမ်းသပ်သူ ချတ်ထဲဝင်ပါ', joinSub:'အမည်ထည့်၍ စတင်ပါ။ အကောင့်မလို။', yourName:'သင့်အမည်', join:'ချတ်ဝင်ရန်', chooseLang:'ဘာသာစကား / Language', edit:'ပြင်ရန်', unsend:'ပြန်ရုပ်သိမ်း', editPrompt:'သင့်စာကို ပြင်ပါ:', delConfirm:'ဤစာကို ပြန်ရုပ်သိမ်းမလား?',
         loginTitle:'အက်ဒမင်ဝင်ရောက်ရန်', loginSub:'ဝန်ထမ်းသီးသန့် — အက်ဒမင်ဖြေ၊ ပြင်ပြီးမှတ်၊ AI ခလုတ်ကို ဖွင့်ပေးသည်။', password:'စကားဝှက်', login:'ဝင်မည်', cancel:'မလုပ်တော့',
         faqTitle:'အကူအညီ / မေးလေ့ရှိသော', faqSearchPh:'မေးခွန်းရိုက်ပါ…', aiOn:'AI အလိုအလျောက်ဖြေ - ဖွင့်', aiOff:'AI အလိုအလျောက်ဖြေ - ပိတ်',
@@ -288,13 +290,36 @@
       lastSig = sig; cache = data; render()
     }
 
+    // ---------- 回复线程辅助 ----------
+    // 新式回复的正文首行是 "↩<被回复消息id>"；取出父消息 id（取不到返回 null）
+    function parentIdOf(m){ const mm=(m.body||'').match(/^↩([0-9a-fA-F-]{36})(\n|$)/); return mm?mm[1]:null }
+    // 一条消息显示用的署名（AI / AidBridge / 测试者名字）
+    function authorLabel(m){ return m.author==='ai' ? t('aiName') : (m.author==='team' ? 'AidBridge' : (m.author_name||t('tester'))) }
+    // 去掉回复前缀后的纯正文（兼容新式 ↩id 和旧式 "↩ 某人: 摘要"）
+    function plainText(m){
+      let bdy=m.body||''
+      const mm=bdy.match(/^↩[0-9a-fA-F-]{36}(\n|$)/)
+      if (mm) return bdy.slice(mm[0].length)
+      if (bdy.startsWith('↩ ')) { const nl=bdy.indexOf('\n'); return nl>0?bdy.slice(nl+1):'' }
+      return bdy
+    }
+    // 被回复消息的简短摘要（给引用块用）
+    function snippetOf(m){ let s=plainText(m).replace(/\s+/g,' ').trim(); if(!s && Array.isArray(m.images)&&m.images.length) s='🖼'; return s.length>40?s.slice(0,40)+'…':s }
+
     function render(forceScroll) {
       const atBottom = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight < 80
       msgsEl.innerHTML = ''
       const w = document.createElement('div'); w.className='welcome'; w.textContent = t('welcome'); msgsEl.appendChild(w)
-      for (const m of cache) {
+      // 按"回复"关系建树：顶层消息按时间排列，回复挂在被回复消息正下方（缩进）
+      const byId={}; cache.forEach(x=>byId[x.id]=x)
+      const kids={}; const roots=[]
+      for (const x of cache){ const pid=parentIdOf(x); if (pid && byId[pid]) (kids[pid]=kids[pid]||[]).push(x); else roots.push(x) }
+      const ordered=[]
+      ;(function walk(list, depth){ for (const x of list){ ordered.push({ m:x, depth }); if (kids[x.id]) walk(kids[x.id], depth+1) } })(roots, 0)
+      for (const { m, depth } of ordered) {
         const mine = isMine(m)
-        const row = document.createElement('div'); row.className = 'row ' + (mine ? 'mine' : 'other')
+        const row = document.createElement('div'); row.className = 'row ' + (mine ? 'mine' : 'other'); row.dataset.mid = m.id
+        if (depth>0){ row.classList.add('threaded'); row.style.marginLeft = Math.min(depth,4)*20 + 'px' }
         const av = document.createElement('div')
         if (m.author==='team') {
           // 团队回复用 AidBridge logo 作头像（官方品牌形象）
@@ -314,17 +339,21 @@
         else tag = esc(m.author_name||'')+(mine?' ('+t('you')+')':'')
         who.innerHTML = tag
         const b = document.createElement('div'); b.className = 'bubble ' + (m.author==='ai'?'ai':(m.author==='team'?'team':''))
-        if (m.body) {
-          // 若消息以"↩ 某人: 摘要"开头，说明是回复某条消息：把首行渲染成引用块，其余是正文
-          if (m.body.startsWith('↩ ')) {
-            const nlIdx = m.body.indexOf('\n')
-            const qText = nlIdx > 0 ? m.body.slice(0, nlIdx) : m.body
-            const restText = nlIdx > 0 ? m.body.slice(nlIdx + 1) : ''
-            const qd = document.createElement('div'); qd.className = 'quote'; qd.textContent = qText
-            b.appendChild(qd)
-            if (restText) { const rest = document.createElement('div'); rest.textContent = restText; b.appendChild(rest) }
-          } else { b.textContent = m.body }
-        }
+        const pid = parentIdOf(m)
+        if (pid && byId[pid]) {
+          // 新式回复：从父消息推导引用块（显示在缩进后的气泡里），正文是去掉首行后的内容
+          const qd = document.createElement('div'); qd.className = 'quote'; qd.textContent = '↩ ' + authorLabel(byId[pid]) + ': ' + snippetOf(byId[pid])
+          b.appendChild(qd)
+          const txt = plainText(m); if (txt) { const rest = document.createElement('div'); rest.textContent = txt; b.appendChild(rest) }
+        } else if (m.body && m.body.startsWith('↩ ')) {
+          // 旧式回复（引用文本写在正文里，无父 id，不参与缩进）
+          const nlIdx = m.body.indexOf('\n')
+          const qText = nlIdx > 0 ? m.body.slice(0, nlIdx) : m.body
+          const restText = nlIdx > 0 ? m.body.slice(nlIdx + 1) : ''
+          const qd = document.createElement('div'); qd.className = 'quote'; qd.textContent = qText
+          b.appendChild(qd)
+          if (restText) { const rest = document.createElement('div'); rest.textContent = restText; b.appendChild(rest) }
+        } else if (m.body) { b.textContent = m.body }
         if (Array.isArray(m.images) && m.images.length) {
           const ig = document.createElement('div'); ig.className='bimg'
           m.images.forEach(p=>{ const im=document.createElement('img'); im.src=pubUrl(p); im.onclick=()=>openLb(pubUrl(p)); ig.appendChild(im) })
@@ -367,8 +396,11 @@
       return false
     }
     async function editMsg(m){
-      const nt = prompt(t('editPrompt'), m.body||''); if (nt===null) return
-      const v = nt.trim(); if (!v) return
+      const pid = parentIdOf(m)
+      // 编辑时只让用户改纯正文（不显示 ↩id 前缀），保存时再把回复指向补回去
+      const nt = prompt(t('editPrompt'), pid ? plainText(m) : (m.body||'')); if (nt===null) return
+      let v = nt.trim(); if (!v) return
+      if (pid) v = '↩' + pid + '\n' + v
       if (m.author==='team') { await sb.from('chat_messages').update({ body:v }).eq('id', m.id) }
       else { await sb.rpc('edit_message', { p_id:m.id, p_token: myMsgs()[m.id], p_body:v }) }
       lastSig=''; poll()
@@ -389,7 +421,7 @@
       let snip = (m.body||'').replace(/^↩ [^\n]*\n?/, '').replace(/\s+/g,' ').trim()
       if (!snip && Array.isArray(m.images) && m.images.length) snip = '🖼'
       if (snip.length > 50) snip = snip.slice(0,50)+'…'
-      replyTo = { who, snippet: snip }
+      replyTo = { id: m.id, who, snippet: snip }
       document.getElementById('replyBarTxt').textContent = '↩ ' + t('replyingTo') + ' ' + who + ': ' + snip
       document.getElementById('replyBar').style.display = 'flex'
       const inp = document.getElementById('input'); inp.focus()
@@ -418,8 +450,9 @@
           if (error) throw error
           paths.push(path)
         }
-        // 如果是在回复某条消息，把引用拼到正文最前面（首行为引用，换行后是回复正文）
-        if (replyTo) body = '↩ ' + replyTo.who + ': ' + replyTo.snippet + (body ? '\n' + body : '')
+        // 如果是在回复某条消息：正文首行存被回复消息的 id（↩<id>），换行后是回复正文；渲染时挂到该消息下面
+        const replyParentId = replyTo ? replyTo.id : null
+        if (replyParentId) body = '↩' + replyParentId + '\n' + (body || '')
         const msgId = crypto.randomUUID()
         const row = { id: msgId, author: me.type, author_name: me.name, body: body||null, images: paths.length?paths:null }
         if (me.type === 'tester') {
@@ -430,8 +463,10 @@
         if (e2) throw e2
         document.getElementById('input').value=''; chosen=[]; renderPreviews(); clearReply()
         lastSig=''; await poll()
-        // Phase 2: trigger AI auto-reply for tester messages
-        if (AI_ENGINE_READY && me.type==='tester' && aiEnabled) { showTyping(); try { await fetch(`${SUPABASE_URL}/functions/v1/ai-reply`, {method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}, body: JSON.stringify({ body, images: paths })}) } catch(e){} hideTyping(); lastSig=''; poll() }
+        // 滚动到刚发出的消息（回复挂在被回复消息下面，不一定在底部）
+        const sentEl = msgsEl.querySelector('[data-mid="'+msgId+'"]'); if (sentEl) sentEl.scrollIntoView({ block:'center' })
+        // 触发 AI 自动回复：仅对"新的顶层测试者反馈"。回复（包括团队/测试者互相回复）不触发，AI 不插话
+        if (AI_ENGINE_READY && me.type==='tester' && aiEnabled && !replyParentId) { showTyping(); try { await fetch(`${SUPABASE_URL}/functions/v1/ai-reply`, {method:'POST', headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}, body: JSON.stringify({ body, images: paths })}) } catch(e){} hideTyping(); lastSig=''; poll() }
       } catch(e) {
         const msg = (e && e.message) || String(e)
         if (me.type === 'team' && /row-level security|jwt|token|auth/i.test(msg)) {
